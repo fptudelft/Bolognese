@@ -11,6 +11,6 @@ project/plugins/project/
 
 # Scala-IDE specific
 .scala_dependencies
-
+.cache
 # OS X specific
 .DS_Store

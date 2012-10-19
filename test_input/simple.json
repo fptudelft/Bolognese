@@ -1,0 +1,38 @@
+{ "categories" : [ "Compulsory", "Free Electives" ]
+  "bookable modules" : [
+      {"course name" : "Distributed Algorithms"
+       "ects" : 6
+       "selectable categories" : ["Compulsory", "Free Electives"]},
+
+      {"course name" : "Advanced Algorithms"
+       "ects" : 5
+       "selectable categories" : ["Compulsory", "Free Electives"]},
+
+      {"course name" : "Compiler Construction"
+       "ects" : 5
+       "selectable categories" : ["Compulsory", "Free Electives"]},
+
+      {"course name" : "Software Architecture"
+       "ects" : 5
+       "selectable categories" : ["Compulsory", "Free Electives"]},
+
+      {"course name" : "Web & Semantic Web Engineering"
+       "ects" : 5
+       "selectable categories" : ["Compulsory", "Free Electives"]},
+
+      {"course name" : "Methodology Of Science And Engineering"
+       "ects" : 4
+       "selectable categories" : ["Compulsory"]},
+
+      {"course name" : "Functional Programming"
+       "ects" : 5
+       "selectable categories" : ["Free Electives"]},
+  ]
+  "booked modules" : [
+      {"course name" : "Methodology Of Science And Engineering"
+       "selected category" : "Compulsory"},
+
+      {"course name" : "Functional Programming"
+       "selected category" : "Free Electives"},
+  ]
+}

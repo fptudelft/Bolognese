@@ -9,54 +9,97 @@ import oscar.cp.core._
 
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
 
-  class Category(id: Int, name: String, min: Int, max: Int) {
-    
-  }
+  case class Category(val id: Int, name: String, min: Int, max: Int) {}
   
-  class Module(id: Int , name: String, ects: Int, categories: Array[Int]) {
-    
+  case class Module(val id: Int , name: String, ects: Int, val categories: List[Int]) {}
+  
+  class DecisionTable(cp: CPSolver, categories : List[Category], modules : List[Module]) {
+   
+   val decisionTable = categories.map { c => 
+        		modules.map { 
+        		  m => if (m.categories.contains(c.id)) {
+    	    		CPVarInt(cp, 0, 1)
+        		  } else {
+    	    		CPVarInt(cp, 0)
+    	    	}}}
+            
+   	def get() : List[CPVarInt] = {
+   	  decisionTable.flatten
+   	}
+   
+     def get(module : Module) : List[CPVarInt] = {
+    	  decisionTable.map { c => c(module.id) }
+     }
+      
+     def get(category : Category) : List[CPVarInt] = {
+    	  decisionTable(category.id)
+     }
+     
+     def getBooked(category: Category) = {
+      sum((this.get(category), modules).zipped map { (a, b) => (a * b.ects) })
+     }
+     
+     override def toString() = {
+        decisionTable.transpose.map {a => a.mkString(" ")}.mkString("\n")
+     } 
   }
   
   get("/") {
       val cp = CPSolver()
-    
-      val totalEcts = 120
       
-      val categories = Array(new Category(0, "Compulsory", 33, 33),
-    		  				 new Category(1, "Specialization", 17, 17),
-    		  				 new Category(2, "Faculty", 0, 10),
-    		  				 new Category(3, "Free", 15, 15))
-    		  				 
-      val modules = Array(new Module(0, "Methods", 5, Array(0)),
-    		  			  new Module(1, "Computer Architecture", 5, Array(0)),
-    		  			  new Module(2, "Computer Arithemtics", 5, Array(0)),
-    		  			  new Module(3, "Processor Design Project", 5, Array(0)),
-    		  			  new Module(4, "Intro Computer Enginerring", 2, Array(0)),
-      					  new Module(5, "Parallel Algorithms", 6, Array(0)),
-      					  new Module(6, "Compolier Construction", 5, Array(0)))
-      					 
-      val dcm = Array.fill(modules.length) {CPVarInt(cp, 0 to 1)}
+      val totalEcts = 17
       
-//      val n = 8 //number of queens
-//      val Queens = 0 until n
-//      //variables
-//      val queens = for(i <- Queens) yield CPVarInt(cp,1 to n)
+//      val categories = List(new Category(0, "Compulsory", 33, 33),
+//    		  				new Category(1, "Specialization", 17, 17),
+//    		  				new Category(2, "Faculty", 0, 10),
+//    		  				new Category(3, "Free", 15, 15))
+//    		  				 
+//      val modules = List(new Module(0, "Methods", 5, List(0)),
+//    		  			 new Module(1, "Computer Architecture", 5, List(0)),
+//    		  			 new Module(2, "Computer Arithemtics", 5, List(0)),
+//    		  			 new Module(3, "Processor Design Project", 5, List(0, 2)),
+//    		  			 new Module(4, "Intro Computer Enginerring", 2, List(0)),
+//      					 new Module(5, "Parallel Algorithms", 6, List(0)),
+//      					 new Module(6, "Compiler Construction", 5, List(0)))
 //      
-//      var nbsol = 0
-//      cp.solveAll subjectTo {
-//          cp.add(alldifferent(queens),Strong)
-//          cp.add(alldifferent(for(i <- Queens) yield queens(i) + i),Strong)
-//          cp.add(alldifferent(for(i <- Queens) yield queens(i) - i),Strong)
-//      } exploration {        
-//        for (q <- Queens.suspendable) {
-//          cp.branchAll(1 to n)(v => cp.post(queens(q) == v))
-//        }
-//        nbsol += 1
-//      }
-  
-      //print some statistics
-//      "Number of solutions, with " + n + " " + "queens: " + nbsol
-  }
+ 
+    val categories = List(new Category(0, "Compulsory", 10, 33),
+    		  				new Category(1, "Specialization", 7, 7))
+    		  		
+    val modules = List(new Module(0, "Methods", 5, List(0)),
+    		  			 new Module(1, "Computer Architecture", 5, List(0)),
+    		  			 new Module(2, "Computer Arithemtics", 5, List(0)),
+    		  			 new Module(3, "Processor Design Project", 5, List(1)),
+    		  			 new Module(4, "Intro Computer Enginerring", 2, List(1)),
+      					 new Module(5, "Parallel Algorithms", 6, List(0)))
+      					 
+      val decisionTable = new DecisionTable(cp, categories, modules)
+      
+      var str = ""
+
+        cp.minimize(sum(categories.map {c => decisionTable.getBooked(c)})) subjectTo {
+    	  modules.foreach { m => cp.add(sum(decisionTable.get(m)) <= 1)}
+    	  categories.foreach { c => cp.add(decisionTable.getBooked(c) >= c.min)}
+    	  
+    	  def boundedBooked(category: Category) = {
+    		  val sumOfBooked = decisionTable.getBooked(category)
+    		  if (sumOfBooked.max > category.max)
+    		    sumOfBooked.updateMax(category.max)
+    		  sumOfBooked
+    	  }  	  
+    	 cp.add(sum(categories.map { c => boundedBooked(c) }) >= totalEcts)	
+    	 
+      } exploration {
+        cp.binaryFirstFail(decisionTable.get.toIndexedSeq)
+      	str += "\n" + decisionTable + "\n"
+      }
+       cp.printStats()
+      if (str != "") {
+        str 
+      } else {
+       "No Result"  
+        }
+    }
 
   notFound {
     // remove content type in case it was set through an action

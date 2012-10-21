@@ -41,7 +41,18 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
      
      override def toString() = {
         decisionTable.transpose.map {a => a.mkString(" ")}.mkString("\n")
-     } 
+     }
+     
+     def getBookings() = {
+       categories.map {c=>(c, modules.filter{m=>decisionTable(c.id)(m.id).isBoundTo(1)})}
+     }
+  }
+  
+  def bookingToString(i : List[(Category, List[Module])]) : String = {
+    i.map(bookingToString).mkString("\n")
+  }
+  def bookingToString(i:(Category, List[Module])) : String = {
+    i._1.name + " : {\n" + i._2.map(m=>"\t" + m.name + "\n").mkString("") + "}"
   }
   
   get("/") {
@@ -76,6 +87,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
       val decisionTable = new DecisionTable(cp, categories, modules)
       
       var str = ""
+      var solution : List[List[(Category, List[Module])]]= List()
 
         cp.minimize(sum(categories.map {c => decisionTable.getBooked(c)})) subjectTo {
     	  modules.foreach { m => cp.add(sum(decisionTable.get(m)) <= 1)}
@@ -92,13 +104,15 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
       } exploration {
         cp.binaryFirstFail(decisionTable.get.toIndexedSeq)
       	str += "\n" + decisionTable + "\n"
+      	solution = decisionTable.getBookings::solution
       }
        cp.printStats()
-      if (str != "") {
-        str 
-      } else {
-       "No Result"  
-        }
+//      if (str != "") {
+//        str 
+//      } else {
+//       "No Result"  
+//        }
+       bookingToString(solution.last)
     }
 
   notFound {

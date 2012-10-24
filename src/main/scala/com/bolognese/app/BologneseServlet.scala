@@ -97,6 +97,8 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 
     contentType = "application/json"
     implicit val formats = Serialization.formats(NoTypeHints)
+    // val oldState = read[State](request.body) // Results in a net.liftweb.json.MappingException: No usable value for totalEcts Did not find value which can be converted into int
+
     val cp = CPSolver()
     val totalEcts = 17
  

@@ -100,11 +100,11 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     val cp = CPSolver()
     val totalEcts = 17
  
-// http://127.0.0.1:8080/AddCategory?cat=compulsory,10,33&cat=specialization,7,7&mod=methods,5,compulsory&mod=computer%20architecture,5,compulsory&mod=Computer%20Arithemtics,5,compulsory&mod=Processor%20Design%20Project,5,specialization&mod=Intro%20Computer%20Engineering,2,specialization&mod=Parallel%20Algorithms,6,compulsory
+// http://127.0.0.1:8080/solve?cat=compulsory,10,33&cat=specialization,7,7&mod=methods,5,compulsory&mod=computer%20architecture,5,compulsory&mod=Computer%20Arithemtics,5,compulsory&mod=Processor%20Design%20Project,5,specialization&mod=Intro%20Computer%20Engineering,2,specialization&mod=Parallel%20Algorithms,6,compulsory
 
 // Torn apart the link looks like this:
 
-// http://127.0.0.1:8080/AddCategory
+// http://127.0.0.1:8080/solve
 // ?cat=compulsory,10,33
 // &cat=specialization,7,7
 // &mod=methods,5,compulsory

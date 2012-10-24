@@ -57,7 +57,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 
-  get("/AddCategory") {
+  get("/solve") {
     var catId : Int = 0
     def fetchCategories() : List[Category] = {
       var retCats = List[Category]()

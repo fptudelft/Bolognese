@@ -8,18 +8,18 @@ The biblatex package is already installed in the MikTeX distribution for Windows
 
 On Ubuntu, it is located in the biblatex package (apt-get install biblatex).
 
-On Mac or other systems... I have no idea <TODO>
+On Mac or other systems... I have no idea TODO
 
 ###Compilation
 
-On Windows, using MikTeX and the included TeXworks, set the compilation type to `pdfLaTeX+MakeIndex+BibTeX' and press the `play' button.
+On Windows, using MikTeX and the included TeXworks, set the compilation type to `pdfLaTeX+MakeIndex+BibTeX` and press the play button.
 
 On Ubuntu, run:    
-pdflatex report.tex    
+`pdflatex report.tex    
 bibtex report.aux
-pdflatex report.tex
+pdflatex report.tex`
 
-On Mac or other systems... I have no idea <TODO>
+On Mac or other systems... I have no idea TODO
 
 ###House keeping
 

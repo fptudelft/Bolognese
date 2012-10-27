@@ -10,9 +10,9 @@ import com.bolognese.Module
 import com.bolognese.Category
 import com.bolognese.Solver
 import com.bolognese.State
-
 import net.liftweb.json._
 import Serialization.{read, write => swrite}
+import com.bolognese.ProblemModel
 
 
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
@@ -42,9 +42,15 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     swrite(newState)
   }
     
-  post("/") {
+  post("/posttest") {
     implicit val formats = Serialization.formats(NoTypeHints)
-    val state = read[State](request.body)
+//    val state = read[State](request.body)
+    val model = read[ProblemModel](request.body)
+    val cp = new CPSolver()
+    val decisionTable = new DecisionTable(cp, model.categories, model.modules)
+    var newState = Solver.solve(new State(cp, model.categories, model.modules,
+                                          decisionTable, model.totalEcts))
+    swrite(newState)
   }
 
   notFound {

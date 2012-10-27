@@ -13,4 +13,10 @@ case class State(
     var bookings : List[(Category, List[Module])] = List()) {
 }
 
+case class ProblemModel(
+	val categories:List[Category],
+	val modules:List[Module],
+	val totalEcts:Int
+)
+
 

@@ -1,0 +1,158 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{references.bib}
+
+\title{Bolognese\\{\large solving the Bologna scheduling problem}}
+\author{Alon Dolev \and Joey Ezechiels \and Volker Lanting}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+This document describes the design and implementation process of an application which solves the Bologna scheduling problem.
+To do so, it uses an existing constraint programming library for Scala, called OscaR.
+In the process of solving the Bologna scheduling problem, a functional interface to OscaR was created.
+This interface consists of a JavaScript library to build a constraint model, and a scala web server (using scalatra) which accepts a constraint model and tries to solve it using OscaR.
+\end{abstract}
+
+\newpage
+
+%===========   The problem domain   ============
+
+\section{The problem domain}
+In this section, a short description of the Bologna scheduling problem will be given.
+Then we will further specify the problem that we set out to solve and outline the scope of this project.
+
+	%===========   The Bologna scheduling problem   ============
+
+\subsection{The Bologna scheduling problem}
+In the Bologna process, courses (Modules) have a fixed number of points (ECTS) representing the workload required to complete the course.
+To complete a study program, a certain amount of ECTS (total required ECTS) has to be obtained by succesfully completing Modules.
+There can be more Modules than required to reach the total required ECTS.
+In that case students can decide which Modules to take, although they are limited in their choice by some extra constraints.
+
+Each Module should be booked in a Category, but not all Modules can be booked in all Categories.
+Also, there should be enough Modules booked in each Category to reach the minimum required amount of ECTS of the Category.
+Categories also have a maximum amount of ECTS.
+If the ECTS of all Modules booked in a Category exceeds this amount, then the student only gets credit for this maximum amount of ECTS.
+The remainder of the ECTS will therefore not count towards the total required ECTS of the study program.
+
+The problem of booking Modules in Categories in such a way that the total required amount of ECTS is reached without violating any of the constraints is what we call the Bologna scheduling problem.
+
+	%===========   The problem domain for this project   ============
+
+\subsection{The problem domain for this project}
+In this section, we will first discuss the main entities which define an instance of the Bologna scheduling problem.
+Then we will briefly touch upon the extend of the problem domain and what the scope for this project was.
+
+		%===========   The problem domain for this project   ============
+
+\subsubsection{Main problem entities}
+\label{sec:problem-parts}
+We defined three main parts that the Bologna scheduling problem consists of:
+\begin{description}
+	\item[Module] \hspace*{1em}
+	\begin{itemize}
+		\item name -- the name of the Module
+		\item ects -- the amount of ECTS for the Module
+		\item categories -- the collection of Categories in which this Module is allowed to be booked
+	\end{itemize}
+
+	\item[Category] \hspace*{1em}
+	\begin{itemize}
+		\item name -- the name of the Category
+		\item min\_ects -- the minimum amount of ECTS that should be booked in the Category
+		\item max\_ects -- the maximum amount of ECTS that a student can get credit for in this Category
+	\end{itemize}
+
+	\item[total\_ects] the total amount of creditable ECTS that should be booked and completed in order to pass the study program
+\end{description}
+Given a collection of Modules, a collection of Categories and a total amount of required ECTS, we can define all required constraints and compute a valid booking of Modules.
+
+		%===========   The problem domain for this project   ============
+
+\subsubsection{Limited scope}
+\label{sec:problem-scope}
+Although we can describe the general problem with the entities outlined in 
+\hyperref[sec:problem-parts]{Section \ref*{sec:problem-parts}}, 
+students probably want more than just a `random' schedule, even though completing it would mean completing their study program.
+We will now briefly discuss some \emph{optimization goals} the student might have. 
+These will be discussed in more detail, along with other extensions of the application, in 
+\hyperref[sec:future]{Section \ref*{sec:future}}
+
+For example, modules are usually given only during certain time periods (like quarters or semesters), and a student might want to balance the ECTS load as evenly as possible over all time-periods.
+Alternatively, she might want to minimize the time required to finish all booked modules, minimize the amount of ECTS she won't get credit for, or some combination of these optimization goals.
+
+For this project we will focus only on the optimization goal of minimizing the amount of booked ECTS points.
+This comes down to minimizing the amount of booked ECTS points for which the student won't get credit (overflowing Category.max\_ects or exceeding total\_ects).
+
+%============   The general approach   ==========
+
+\section{The general approach}
+Due to time constraints, the domain of the problem has been restricted as described in
+\hyperref[sec:problem-scope]{Section \ref*{sec:problem-scope}}.
+We chose to use Constraint Programming to tackle the problem, as this allows the addition of extra constraints later on.
+The problem can be rewritten as a constraint model, as described in 
+\hyperref[sec:constraint-model]{Section \ref*{sec:constraint-model}}, which can in turn be solved by a constraint solver.
+
+This project was also meant as a Scala learning experience, so we limied the possible choices for constraint solvers to those with a Scala interface.
+We compared two possible constraint solvers: OscaR \cite{oscar} and Copris \cite{copris}.
+
+Copris seems to be rather new and lacks English documentation, apart from the rather limited API scaladoc.
+It offers a more concise interface to constraint programming than Oscar, but has no built in optimization support like minimize or maximize.
+OscaR on the other hand has an English wiki, although with broken links, but there is also a blog with some documented examples \cite{hakank}.
+Furthermore, they offer a builtin minimize function.
+
+
+Based on documentation and the presence of a minimization function which can be used for optimization goals, we went for OscaR.
+
+%============   Design of the application   ==========
+
+\section{Design of the application}
+\label{sec:constraint-model}
+Given a problem instance as discussed in
+\hyperref[sec:problem-parts]{Section \ref*{sec:problem-parts}}, 
+we can rewrite the problem into the following constraint model:
+\begin{description}
+\item[variables]
+	For each pair of a Category and Module $(c,m)$ where the Module is allowed to be booked in the Category (i.e. $c\in m.categories$), define a decision variable $d_{cm}\in\{0,1\}$ which will eventually be $1$ if the Module is booked in the Category and $0$ if it is not.
+
+\item[constraints]\hspace*{1em}
+\begin{itemize}
+	\item
+	A Module can only be booked once:  
+	\\for each Module $m$: $\sum_{c\in m.categories}d_{cm}\leq 1$
+
+	\item
+	A Category $c$ should have at least have enough booked ECTS to reach its minimum amount of required ECTS:
+	\\ define $booked_c$ as the amount of ECTS booked for a Category $c$:
+	
+	$booked_c=\sum_{m\in Modules\wedge c\in m.categories} d_{cm}*m.ects$
+
+	then for each Category $c$: $booked_c \geq c.min\_ects$
+
+	\item the total amount of creditable, booked ECTS should be at least as much as the total required ECTS of the study program:
+	\\define $creditable_c$ as the creditable, booked ECTS of a Category $c$:
+	
+	$creditable_c=min(c.max\_ects, booked_c)$
+
+	then $\sum_{c\in Categories}creditable_c  \geq total\_ects$
+\end{itemize}
+
+\item[optimization goal]
+	the optimization goal is to minimize the amount of booked ECTS:
+	 $minimize(\sum_{c\in Categories}booked_c)$
+\end{description}
+
+%===========   Future Research   ==========
+
+\section{Future Research}
+\label{sec:future}
+\textbf{TODO}
+
+\printbibliography
+
+\end{document}

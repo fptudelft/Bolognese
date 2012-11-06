@@ -17,3 +17,6 @@ project/plugins/project/
 .cache
 # OS X specific
 .DS_Store
+
+# Ensime crap
+.ensime*

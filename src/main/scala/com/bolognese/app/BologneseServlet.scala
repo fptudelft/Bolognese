@@ -10,6 +10,8 @@ import com.bolognese.Module
 import com.bolognese.Category
 import com.bolognese.Solver
 import com.bolognese.State
+import scala.util.parsing.json.{JSON => JSON}
+
 import net.liftweb.json._
 import Serialization.{read, write => swrite}
 import com.bolognese.ProblemModel
@@ -63,6 +65,8 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 
+  
+
   get("/solve") {
     var catId : Int = 0
     def fetchCategories() : List[Category] = {
@@ -103,10 +107,10 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 
     contentType = "application/json"
     implicit val formats = Serialization.formats(NoTypeHints)
-    // val oldState = read[State](request.body) // Results in a net.liftweb.json.MappingException: No usable value for totalEcts Did not find value which can be converted into int
-
-    val cp = CPSolver()
-    val totalEcts = 17
+    try {
+      val oldState = read[State](request.body) // Results in a net.liftweb.json.MappingException: No usable value for totalEcts Did not find value which can be converted into int
+      val cp = CPSolver()
+      val totalEcts = 17
  
 // http://127.0.0.1:8080/solve?cat=compulsory,10,33&cat=specialization,7,7&mod=methods,5,compulsory&mod=computer%20architecture,5,compulsory&mod=Computer%20Arithemtics,5,compulsory&mod=Processor%20Design%20Project,5,specialization&mod=Intro%20Computer%20Engineering,2,specialization&mod=Parallel%20Algorithms,6,compulsory
 
@@ -148,11 +152,28 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
    //           ]
    // }
     
-    val categories = fetchCategories()
-    val modules = fetchModules(categories)
-    val decisionTable = new DecisionTable(cp, categories, modules)
-    var newState = Solver.solve(new State(cp, categories, modules,
-                                          decisionTable, totalEcts))
-    swrite(newState)
+      val categories = fetchCategories()
+      val modules = fetchModules(categories)
+      val decisionTable = new DecisionTable(cp, categories, modules)
+      var newState = Solver.solve(new State(cp, categories, modules,
+                                            decisionTable, totalEcts))
+      swrite(newState)
+    } catch {
+      case me : net.liftweb.json.MappingException => {
+        // No world state yet, so create it
+        
+        val cp = CPSolver()
+        val totalEcts = 17 
+        
+        val categories = fetchCategories()
+        val modules = fetchModules(categories)
+        val decisionTable = new DecisionTable(cp, categories, modules)
+        var newState = Solver.solve(new State(cp, categories, modules,
+                                              decisionTable, totalEcts))
+        swrite(newState)
+        swrite("Created new state.")
+        swrite(parse(""" { "hi" : [1,2,3] }"""))
+      }
+    }
   }
 }

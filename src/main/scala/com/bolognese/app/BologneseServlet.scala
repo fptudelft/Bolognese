@@ -13,6 +13,19 @@ import com.bolognese.State
 import net.liftweb.json._
 import Serialization.{read, write => swrite}
 import com.bolognese.ProblemModel
+import com.bolognese.CPMVarInt
+import com.bolognese.CPMIntSum
+import com.bolognese.CPMIntMul
+import com.bolognese.CPMIntRef
+import com.bolognese.CPMIntSum
+import scala.collection.immutable.Map
+import com.bolognese.CPMIntGtEq
+import com.bolognese.CPMIntMul
+import com.bolognese.CPMIntRef
+import com.bolognese.CPMIntGtEq
+import com.bolognese.CPMIntLtEq
+import com.bolognese.CPMIntGtEq
+import com.bolognese.CPMIntMinimum
 
 
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
@@ -35,8 +48,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 		       new Module(5, "Parallel Algorithms", 6, List(0)))
 
     val decisionTable = new DecisionTable(cp, categories, modules)
-  
-		
+    
     var newState = Solver.solve(new State(cp, categories, modules,
                                           decisionTable, totalEcts))
     swrite(newState)

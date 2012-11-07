@@ -1,4 +1,5 @@
 package com.bolognese
+import oscar.cp.core.CPVarInt
 import oscar.cp.modeling.CPSolver
 import oscar.cp.modeling.sum
 
@@ -27,5 +28,10 @@ object Solver {
 			state.bookings = state.decisionTable.getBookings()
 		}
 		state 
+	}
+	
+	def solve(model:CPModel) = {
+	    val cp = new CPSolver;
+	    
 	}
 }

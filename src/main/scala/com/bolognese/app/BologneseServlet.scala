@@ -72,11 +72,19 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 //	    val res = Solver.solve(model).map(x=>x.name+" = "+x.value)
 	    val res = OscaR.create(model)
 	    val x = for (
-	        vs <- res;
-	        ys <- res
-	    )yield vs++ys
-	    
-	    
+	        vs <- res
+	    ) yield {
+	        for (c<-categories) yield (
+	        	(
+	        		c,
+	        		(for (v<-vs.filter(v=>v.name.endsWith(":"+c.id) && v.value == 1)) yield
+	            		modules.filter(m=>v.name.startsWith(m.id+":"))).flatten
+	        	)
+	        )
+	    } 
+        val y = x.map(x=>x.toMap)
+	    val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
+	    z.apply
     }
   
   post("/posttest") {

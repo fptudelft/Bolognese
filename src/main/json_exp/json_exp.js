@@ -1,75 +1,106 @@
-// (function() {
-//     var ref = document.getElementsByTagName('script')[0];
-//     var js = document.createElement('script');
-//     // js.src = '//connect.facebook.net/en_US/all' + (debug ? '/debug' : '') + '.js';
-//     // js.src = 'http://code.jquery.com/jquery-1.8.2.js';
-//     js.src = './jquery-1.8.2.js';
-//     ref.parentNode.insertBefore(js, ref);
-// })();
+/************************************************************
+ **                                                        **
+ **                                                        **
+ **                                                        **
+ ************************************************************/
+
+// /**
+//  * Creates a new category and returns it as a dictionary.
+//  * name    : the name of the category
+//  * minEcts : the min number of ECTS to be booked in this category
+//  * maxEcts : the max number of ECTS to be booked in this category
+//  */
+// function newCategory(name, minEcts, maxEcts) {
+//     return { 'name'    : name,
+//              'minEcts' : minEcts,
+//              'maxEcts' : maxEcts };
+// }
+
+// /**
+//  * Creates a new module and returns it as a dictionary.
+//  * name     : the name of the module
+//  * numEcts  : the number of ECTS the module is worth
+//  * category : the name of the category this module should be booked into
+//  */
+// function newModule(name, numEcts, category) {
+//     return { 'name'     : name,
+//              'numEcts'  : numEcts,
+//              'category' : category };
+// }
 
 /**
- * Creates a new category and returns it as a dictionary.
- * name    : the name of the category
- * minEcts : the min number of ECTS to be booked in this category
- * maxEcts : the max number of ECTS to be booked in this category
+ * Creates a set of mappings from an HTML table.
+ * htmlTable: The HTML table.
+ * headerHtmlClass: the html class of the tag used to
+ *                 find the header row of the table
+ * valueHtmlClass:  the html class of the tag used to
+ *                 find the value rows of the table
  */
-function newCategory(name, minEcts, maxEcts) {
-    return { 'name'    : name,
-             'minEcts' : minEcts,
-             'maxEcts' : maxEcts }
+function mappingsFrom(htmlTable, headerHtmlClass, valueHtmlClass) {
+    // Let's build a little language to express what we want more clearly
+
+    var textFrom = function(item) { return item.textContent; };
+
+    var valuesFrom = function(htmlValueRow) {
+        return _.map(htmlValueRow.children, textFrom);
+    };
+
+    /**
+     * Appending to a map - Gangna... eh Functional Style!
+     */
+    var addTo = function(map, kvPair) {
+        var clone = _.clone(map);
+        clone[kvPair[0]] = kvPair[1]; // a kvPair is [key, value]
+        return clone;
+    }
+
+    /**
+     * Create a new mapping based on a row
+     * of values extracted from htmlTable
+     */
+    var newMapping = function(vRow) {
+        var zipReduce = function(orderedValues) {
+            // This closure works because headerRow has
+            // a proper value by the time it is called
+            var assocList = _.zip(headerRow, orderedValues);
+            return _.reduce(assocList, addTo, {});
+        };
+        return zipReduce(vRow);
+    };
+
+    // By definition there's exactly one header row, so the indexing op is safe
+    var headerRow = _.map(htmlTable.find(headerHtmlClass), valuesFrom)[0];
+    var valueRows = _.map(htmlTable.find(valueHtmlClass), valuesFrom);
+    return _.map(valueRows, newMapping);
 }
 
 /**
- * Creates a new module and returns it as a dictionary.
- * name     : the name of the module
- * numEcts  : the number of ECTS the module is worth
- * category : the name of the category this module should be booked into
+ * Fetches a list of Category objects from an html table.
+ * catTable: the root of an HTML table having the
+ *           id attribute set to "CategoriesTable".
  */
-function newModule(name, numEcts, category) {
-    return { 'name'     : name,
-             'numEcts'  : numEcts,
-             'category' : category }
+function fetchCategoriesFrom(catTable) {
+    return mappingsFrom(catTable, ".CTColumnName", ".CTColumnValue");
 }
 
-// function onSuccess(data, textStatus, jqXHR) {
-//     alert(data + '\n' + textStatus + '\n' + jqXHR)
-// }
+/**
+ * Fetches a list of Module objects from an html table.
+ * modTable: the root of an HTML table having the
+ *           id attribute set to "ModulesTable".
+ */
+function fetchModulesFrom(modTable) {
+    return mappingsFrom(modTable, ".MTColumnName", ".MTColumnValue");
+}
 
-// function sendReq() {
-//     $.getJSON( 'localhost:8080/solve', function ( data ) { console.log ( data ); } );
-// }
-
-function sendRequest() {
+function sendRequest(jsonData) {
     $.ajax({
-        url : 'http://localhost:8080/solve',
+        url: 'http://localhost:8080/solve',
         // url : 'http://192.168.1.110:8080/solve',
-        type : 'POST',
+        type: 'POST',
         contentType: 'text/plain; charset=UTF-8',
-        // crossDomain: true,
+        crossDomain: true,
         dataType: 'json',
-        // data : { 'cat' : [ { 'name' : 'Compulsory', 'minEcts' : 10, 'maxEcts' : 33},
-        //                    { 'name' : 'Specialization', 'minEcts' : 7, 'maxEcts' : 7} ],
-        //          'mod' : [ { 'name' : 'Methodology of Science and Engineering', 'numEcts' : 5, 'category' : 'Compulsory'},
-        //                    { 'name' : 'Computer Architecture', 'numEcts' : 5, 'category' : 'Compulsory'},
-        //                    { 'name' : 'Computer Arithemtics', 'numEcts' : 5, 'category' : 'Compulsory'},
-        //                    { 'name' : 'Processor Design Project', 'numEcts' : 5, 'category' : 'Specialization'},
-        //                    { 'name' : 'Intro Computer Engineering', 'numEcts' : 2, 'category' : 'Specialization'},
-        //                    { 'name' : 'Parallel Algorithms', 'numEcts' : 6, 'category' : 'Compulsory'} ] },
-
-        data: { 'cat': [ newCategory('Compulsory', 10, 33),
-                         newCategory('Specialization', 7, 7) ],
-                'mod': [ newModule('Methodology of Science and Engineering',
-                                   5, 'Compulsory'),
-                         newModule('Computer Architecture',
-                                   5, 'Compulsory'),
-                         newModule('Computer Arithemtics',
-                                   5, 'Compulsory'),
-                         newModule('Processor Design Project',
-                                   5, 'Specialization'),
-                         newModule('Intro Computer Engineering',
-                                   2, 'Specialization'),
-                         newModule('Parallel Algorithms',
-                                   6, 'Compulsory') ] },
+        data: jsonData,
         success: function(data, textStatus, jqXHR) {
             if (console && console.log) {
                 console.log('Take in the sweet smell of success:');
@@ -89,16 +120,27 @@ function sendRequest() {
     });
 }
 
-$(document).ready(function(){
-    $('#send-req').click(function(event) {
-        // if (console && console.log) {
-        //     console.log('hello')
-        // }
+$(document).ready(function() {
+    // var jsonData2 = {
+    //     'cat': [ newCategory('Compulsory', 10, 33),
+    //              newCategory('Specialization', 7, 7) ],
+    //     'mod': [ newModule('Methodology of Science and Engineering', 5, 'Compulsory'),
+    //              newModule('Computer Architecture', 5, 'Compulsory'),
+    //              newModule('Computer Arithemtics', 5, 'Compulsory'),
+    //              newModule('Processor Design Project', 5, 'Specialization'),
+    //              newModule('Intro Computer Engineering', 2, 'Specialization'),
+    //              newModule('Parallel Algorithms', 6, 'Compulsory') ] };
 
-        // $.ajax({
-        //     url: ""
-        // });
+    var jsonData = { 'categories': fetchCategoriesFrom($("#CategoriesTable")),
+                     'modules':    fetchModulesFrom($("#ModulesTable")) };
 
-        sendRequest()
+    $('#send-req').click( function(){ sendRequest(jsonData) } );
+
+    $('#logTables').click(function() {
+        console.log("categories: %o", jsonData['categories']);
+        console.log("modules: %o", jsonData['modules']);
+        console.log("jsonData: %o", jsonData);
     });
+
+    $("table").css("background-color", "blue");
 });

@@ -95,12 +95,11 @@ function fetchModulesFrom(modTable) {
 function sendRequest(jsonData) {
     $.ajax({
         url: 'http://localhost:8080/solve',
-        // url : 'http://192.168.1.110:8080/solve',
         type: 'POST',
         contentType: 'text/plain; charset=UTF-8',
         crossDomain: true,
         dataType: 'json',
-        data: jsonData,
+        data: JSON.stringify(jsonData),
         success: function(data, textStatus, jqXHR) {
             if (console && console.log) {
                 console.log('Take in the sweet smell of success:');

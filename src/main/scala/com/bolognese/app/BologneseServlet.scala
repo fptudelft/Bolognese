@@ -11,7 +11,6 @@ import com.bolognese.Category
 import com.bolognese.Solver
 import com.bolognese.State
 import scala.util.parsing.json.{JSON => JSON}
-
 import net.liftweb.json._
 import Serialization.{read, write => swrite}
 import com.bolognese.ProblemModel
@@ -28,6 +27,7 @@ import com.bolognese.CPMIntGtEq
 import com.bolognese.CPMIntLtEq
 import com.bolognese.CPMIntGtEq
 import com.bolognese.CPMIntMinimum
+import com.bolognese.ConstraintModel
 
 
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
@@ -55,7 +55,22 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
                                           decisionTable, totalEcts))
     swrite(newState)
   }
-    
+  
+    get("/monadtest") {
+        val totalEcts = 17
+        val categories = List(new Category(0, "Compulsory", 10, 33),
+        new Category(1, "Specialization", 7, 7))
+        val modules = List(new Module(0, "Methods", 5, List(0)),
+		    new Module(1, "Computer Architecture", 5, List(0)),
+		    new Module(2, "Computer Arithemtics", 5, List(0)),
+		    new Module(3, "Processor Design Project", 5, List(1)),
+		    new Module(4, "Intro Computer Enginerring", 2, List(1)),
+		    new Module(5, "Parallel Algorithms", 6, List(0)))
+	    val model = ConstraintModel.fromBolognese(modules, categories, totalEcts)
+	    val res = Solver.solve(model).map(x=>x.name+" : "+x.value)
+	    res.foldLeft("")((a,b)=>a+b)
+    }
+  
   post("/posttest") {
     implicit val formats = Serialization.formats(NoTypeHints)
 //    val state = read[State](request.body)

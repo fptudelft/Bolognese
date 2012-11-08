@@ -1,0 +1,22 @@
+body {
+    font-family: Helvetica, sans-serif;
+}
+
+table {
+    width: 768;
+}
+
+th {
+    width: 300px;
+    text-align: left;
+}
+
+td {
+    width: 300px
+    text-align: left;
+}
+
+.Button {
+    width: 768;
+    background-color: yellow;
+}

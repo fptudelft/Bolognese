@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Bolognese</title>
+    <script src="js/flapjax-2.1.js"></script>
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/site.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/site.css"/>
+</head>
+<body>
+    <h1>Bolognese</h1>
+    <h2>Categories</h2>
+    <table id="CategoriesTable">
+        <tr>
+            <th>Name</th>
+            <th>Minimum Points</th>
+            <th>Maximum Points</th>
+        </tr>
+        <tr>
+            <td>Compulsory</td>
+            <td>30</td>
+            <td>30</td>
+        </tr>
+    </table>
+</br>
+<form method=post action="#" id="CategoryForm">
+  <fieldset id="CategoryFormField">
+    <label>Name<input id="CategoryName"/></label>
+    <label>Min<input id="CategoryMinPoints"/></label>
+    <label>Max<input id="CategoryMaxPoints"/></label>
+</fieldset>
+</form>
+<h2>Modules</h2>
+<table id="ModulesTable">
+    <tr>
+        <th>Name</th>
+        <th>Points</th>
+        <th>Bookable Categories</th>
+    </tr>
+    <tr>
+        <td>Functional Programming</td>
+        <td>5</td>
+        <td>Specialization Free</td>
+    </tr>
+</table>
+<br/>
+<div id="BookButton" class="Button"><h2>Book</h2></div>
+</body>
+</html>

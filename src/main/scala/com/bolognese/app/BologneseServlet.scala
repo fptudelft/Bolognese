@@ -29,6 +29,7 @@ import com.bolognese.CPMIntLtEq
 import com.bolognese.CPMIntGtEq
 import com.bolognese.CPMIntMinimum
 import com.bolognese.ConstraintModel
+import com.bolognese.OscaR
 
 
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
@@ -68,8 +69,14 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 		    new Module(4, "Intro Computer Enginerring", 2, List(1)),
 		    new Module(5, "Parallel Algorithms", 6, List(0)))
 	    val model = ConstraintModel.fromBolognese(modules, categories, totalEcts)
-	    val res = Solver.solve(model).map(x=>x.name+" : "+x.value)
-	    res.foldLeft("")((a,b)=>a+b)
+//	    val res = Solver.solve(model).map(x=>x.name+" = "+x.value)
+	    val res = OscaR.create(model)
+	    val x = for (
+	        vs <- res;
+	        ys <- res
+	    )yield vs++ys
+	    
+	    
     }
   
   post("/posttest") {

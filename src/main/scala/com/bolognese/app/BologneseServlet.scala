@@ -1,6 +1,7 @@
 package com.bolognese.app
 
 import org.scalatra._
+import org.scalatra.ActionResult._
 import scalate.ScalateSupport
 import oscar.cp.modeling._
 import oscar.search._
@@ -99,7 +100,13 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 
-  
+  post("/solve") {
+    contentType = "application/json"
+    response.setHeader("Access-Control-Allow-Origin", "*")
+    implicit val formats = Serialization.formats(NoTypeHints)
+    // swrite(request.body)
+    swrite(parse(""" { "hi" : [1,2,3] } """))
+  }
 
   get("/solve") {
     var catId : Int = 0
@@ -204,9 +211,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
         val decisionTable = new DecisionTable(cp, categories, modules)
         var newState = Solver.solve(new State(cp, categories, modules,
                                               decisionTable, totalEcts))
-        swrite(newState)
-        swrite("Created new state.")
-        swrite(parse(""" { "hi" : [1,2,3] }"""))
+        swrite(parse("""{ "hi" : [1,2,3] }"""))
       }
     }
   }

@@ -29,7 +29,7 @@ import oscar.cp.modeling.sum
  *  	- flatten (often referred to as join), 
  *	- flatMap (Scala name for bind)
  */
-sealed abstract class OscaR[+A] extends Function0[A] {
+abstract class OscaR[+A] extends Function0[A] {
   def map[B](f:A=>B):OscaR[B] = {
     OscaR.unit(f(this()))
   }

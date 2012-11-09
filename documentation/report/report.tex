@@ -278,13 +278,58 @@ we process the displayed HTML tables.
 		%===========   Design of the server   ==========
 \subsection{The server-side}
 \label{sec:design-server}
+The server will obtain the Bologna scheduling problem instance data from the client
+and will have to build a constraint model from that, on which OscaR can be run.
+Then the result will be mapped to a Bologna format again and is sent to the client.
+
+First, our method of obtaining and processing data from the client is discussed.
+Then, a stateless, side-effect free constraint model for OscaR is designed.
+Finally, we will discuss the design of the OscaR monad, 
+which encapsulates the side-effecting OscaR operations.
+
 \subsubsection{Obtaining data from the client}
 {\Large TODO:} Joey
 \subsubsection{The side-effect free constraint model}
-{\Large TODO:} Volker
-\subsubsection{The OscaR monad}
-{\Large TODO:} Volker
+Since the current constraint model of OscaR has side effects,
+a new constraint model should be created.
 
+This model will contain the following elements:
+\begin{description}
+	\item[variables] integer range variables.
+	This is the stateless counterpart of the OscaR CPVarInt.
+	\item[constraints] constraints which limit the possible values of the variables.
+	This limiting should only be done when the OscaR monad is executed,
+	as it includes side-effects.
+	\item[optimization goals] an optimization goal like minimizing some function.
+\end{description}
+These elements will be constructed as an abstract syntax tree (AST).
+This means that constructing them is like chaining functions (AST node constructors). 
+It also means that we can transform it to OscaR format with something similar to fold algebras.
+
+\subsubsection{The OscaR monad}
+From the constraint model that we just discussed, we can create an OscaR monad of type 
+\verb|OscaR[Collection[CPMFixedVar]]|, 
+where a CPMFixedVar is a variable from the constraint model, 
+which got fixed to a specific value by running OscaR.
+
+Since the OscaR monad encapsulates the side effects,
+we can transform this collection of fixed variables to something closer to the
+data format of the Bologna scheduling problem (e.g. Categories and Modules),
+completely without side effects.
+Only when we get the value out and send it to the client will the side effects occur.
+
+A monad in Haskell should have a function \verb|return : a->m a| and a function
+ \verb|>>= : m a->(a->m b)->m b|, often pronounced as `bind.'
+In Scala, flatMap (a different name for bind) and 
+map (often referred to as fmap since monads are functors) should be defined.
+As this project is about using functional programming concepts, 
+we will define all four `standard' monad functions for the OscaR monad:
+\begin{verbatim}
+unit/return : a -> OscaR a
+map/fmap	: OscaR a -> (a -> b) -> OscaR b
+flatten/join: OscaR (OscaR a) -> OscaR a
+flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
+\end{verbatim}
 
 %===========   The implementation process   ==========
 \section{The implementation process}

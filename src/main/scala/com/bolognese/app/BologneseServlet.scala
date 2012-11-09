@@ -154,7 +154,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 
     val model : CPModel =
       ConstraintModel.fromBolognese(modules, categories, totalEcts)
-    val res : OscaR[Collection[CPMFixedVar]] = OscaR.create(model)
+    val oscarResult : OscaR[Collection[CPMFixedVar]] = OscaR.create(model)
 
     def filteredModules(vs : Collection[CPMFixedVar],
                         c : Category) : Iterable[Module] = {
@@ -174,21 +174,33 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
              yield moduleCorrespondingTo(v)
     }
     
-    // val x : OscaR[(Category, Iterable[Module])] =
     val x : OscaR[List[(Category, Iterable[Module])]] =
-      for (vs <- res) yield {
+      for (vs <- oscarResult) yield {
         for (c <- categories) yield (c, filteredModules(vs, c))
       }
-    val y = x.map(x=>x.toMap)
-    val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
-    z.apply
+    val y = x.map(x => x.toMap)
+    val z = y.map( m => m.map(tuple => {
+      val category = tuple._1
+      val bookedModules = tuple._2
+      (category.name, bookedModules.map(m => m.name))
+    }))
 
+    // This is the end result the user is interested in
+    val modulesPerCategory : Map[String, Iterable[String]] = z.apply
+
+    // Let's log some stuff serverside for easy access 
     println()
+    println("------------------------------------------------------------")
     println("total ects: " + totalEcts)
-    println()
+    println("------------------------------------------------------------")
+    println("categories:")
     categories.foreach (println)
-    println()
+    println("------------------------------------------------------------")
+    println("modules:")
     modules.foreach (println)
+    println("------------------------------------------------------------")
+    println("modulesPerCategory:" + modulesPerCategory)
+    println("------------------------------------------------------------")
     println()
     
     request.body

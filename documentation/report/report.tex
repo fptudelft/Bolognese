@@ -42,6 +42,8 @@ The secondary goal of this project was, for us, to learn a new programming langu
 and to get more familiar with applying functional programming concepts in a real application.
 We chose Scala as the language for this project, as none of us had used it before.
 
+\newpage
+
 %===========   The problem domain   ============
 
 \section{The problem domain}
@@ -114,7 +116,7 @@ For this project we will focus only on the optimization goal of minimizing the a
 This comes down to minimizing the amount of booked ECTS points for which the student won't get credit (overflowing Category.max\_ects or exceeding total\_ects).
 
 
-
+\newpage
 
 %============   Design of the application   ==========
 
@@ -268,7 +270,7 @@ to maximize our learning experience.
 Therefore, we chose to use a reactive programming approach with the Flapjax library \cite{flapjax} to allow the creation, validation and display of Categories and Modules.
 
 \subsubsection{Obtaining data for transmission}
-\label{sec:ObtainingData}
+\label{sec:ObtainingDataForTransmission}
 Solving the actual problem is done on the server, so the
 user-generated problem instance has to be transmitted. To obtain the
 data of the problem instance, we process the displayed HTML tables.\\
@@ -318,14 +320,15 @@ Finally, we will discuss the design of the OscaR monad,
 which encapsulates the side-effecting OscaR operations.
 
 \subsubsection{Obtaining data from the client}
+\label{sec:ObtainingDataFromTheClient}
 
 Upon receiving a POST request to the ``/'' URI, the server
 proceeds to transform the data contained in the POST variables to a
 Scala object structurally very similar to the JSON object sent by the
 client side Javascript code (see section
-\ref{sec:ObtainingData}). This is all done by Scalatra framework code
-and takes almost no effort on the part of the programmer, save for
-defining a Scala case class (in our case calles JsonData) for
+\ref{sec:ObtainingDataForTransmission}). This is all done by Scalatra framework
+code and takes almost no effort on the part of the programmer, save
+for defining a Scala case class (in our case calles JsonData) for
 deserialization purposes.\\
 
 Once this step has been completed, the data contained within the
@@ -374,6 +377,8 @@ flatten/join: OscaR (OscaR a) -> OscaR a
 flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 \end{verbatim}
 
+\newpage
+
 %===========   The implementation process   ==========
 \section{The implementation process}
 \label{sec:impl}
@@ -387,7 +392,7 @@ was discussed in
 \hyperref[sec:design-ui]{Section~\ref*{sec:design-ui}}.
 
 First, we will discuss how we used Flapjax to allow the user to create content.
-Then, our use of Underscore js is for obtaining and transforming this data
+Then, our use of Underscore.js is for obtaining and transforming this data
 is discussed.
 \subsubsection{Flapjax}
 \include{uiimpl}
@@ -421,9 +426,27 @@ we extract the value from the OscaR monad (unleashing the side-effects)
 and return this value to the client.
 The implementation of the OscaR monad will be discussed at the end of this section.
 \subsubsection{Processing the data from the client}
-\label{sec:ProcessingClientData}
-{\Large TODO:} Joey
+\label{sec:ProcessingTheDataFromTheClient}
 
+As discussed in section \ref{sec:ObtainingDataFromTheClient}, the
+server receives its data in the form of POST variables whenever a POST
+request is sent to ``/'', which is then deserialized to a JsonData
+object, which looks a lot structurally like the JSON object sent from
+the client side before serialization.\\
+
+In particular, JsonData currently has 3 values: the total number of
+ECTS (an Int), categories and modules (the latter are both of type
+List$[$Map$[$String, List$[$String$]]]$), as there can be multiple
+categories and modules, and each category and module maps the
+structure harvested from the HTML tables to the harvested data.
+
+The server then extracts these values from such a JsonData instance,
+and then uses them to construct a CPModel instance, which is a
+representation of the constraint model. Afterwards the control is
+handed over to the OscaR monad, which calculates a result and returns
+it as a (category name $\rightarrow$ modules) mapping (instance of
+Map$[$String, Iterable$[$String$]]$ to be precise).
+This result is then sent back to the client side for the user to gaze upon.
 
 		%=========   Creating a constraint model   =========
 
@@ -532,6 +555,8 @@ while still remaining inside the OscaR monad.
 Then finally apply is called (unleashing the side-effects) 
 and the solution is returned to the client.
 
+\newpage
+
 %===========   Conclusion   ==========
 
 \section{Conclusion}
@@ -559,8 +584,8 @@ be taken for the next time, is to look at algorithms and "patterns" used in hard
 design. Actual hardware can be easily simulated using such "data-flow" concept
 and we might use some of those ideas here as well.
 
-\subsection{Functional JavaScript with Underscore js}
-{\Large TODO:} Joey
+% \subsection{Functional JavaScript with Underscore js}
+% {\Large TODO:} Joey
 
 \subsection{Monads and Scala}
 As far as Scala goes, 

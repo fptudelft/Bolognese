@@ -4,30 +4,6 @@
  **                                                        **
  ************************************************************/
 
-// /**
-//  * Creates a new category and returns it as a dictionary.
-//  * name    : the name of the category
-//  * minEcts : the min number of ECTS to be booked in this category
-//  * maxEcts : the max number of ECTS to be booked in this category
-//  */
-// function newCategory(name, minEcts, maxEcts) {
-//     return { 'name'    : name,
-//              'minEcts' : minEcts,
-//              'maxEcts' : maxEcts };
-// }
-
-// /**
-//  * Creates a new module and returns it as a dictionary.
-//  * name     : the name of the module
-//  * numEcts  : the number of ECTS the module is worth
-//  * category : the name of the category this module should be booked into
-//  */
-// function newModule(name, numEcts, category) {
-//     return { 'name'     : name,
-//              'numEcts'  : numEcts,
-//              'category' : category };
-// }
-
 /**
  * Creates a set of mappings from an HTML table.
  * htmlTable: The HTML table.
@@ -39,7 +15,7 @@
 function mappingsFrom(htmlTable, headerHtmlClass, valueHtmlClass) {
     // Let's build a little language to express what we want more clearly
 
-    var textFrom = function(item) { return item.textContent; };
+    var textFrom = function(item) { return item.textContent.split(','); };
 
     var valuesFrom = function(htmlValueRow) {
         return _.map(htmlValueRow.children, textFrom);
@@ -111,9 +87,9 @@ function sendRequest(jsonData) {
         error: function(jqXHR, textStatus, errorThrown) {
             if (console && console.log) {
                 console.log('Look at the shame of failure:');
-                console.log('\tdata: %o', data)
-                console.log('\ttextStatus: %o', textStatus)
                 console.log('\tjqXHR: %o', jqXHR)
+                console.log('\ttextStatus: %o', textStatus)
+                console.log('\terrorThrown: %o', errorThrown)
             }
         },
     });

@@ -12,17 +12,38 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This document describes the design and implementation process of an application which solves the Bologna scheduling problem.
-To do so, it uses an existing constraint programming library for Scala, called OscaR.
+This report was created as part of a project for the course Functional Programming at the Delft University of Technology.
+It describes the design and implementation process of an application which solves the Bologna scheduling problem.
+To solve the problem, an existing constraint programming library for Scala, called OscaR, 
+is used.
 In the process of solving the Bologna scheduling problem, a functional interface to OscaR was created.
-This interface consists of a JavaScript library to build a constraint model, and a scala web server (using scalatra) which accepts a constraint model and tries to solve it using OscaR.
+This interface consists of a a collection of AST node constructors to build a constraint model, 
+and an OscaR monad, which is created from the constraint model and encapsulates the side-effecting OscaR solving process.
 \end{abstract}
 
 \newpage
 
+%===========   Introduction   ============
+
+\section{Introduction}
+This report discusses the design and implementation of an application which solves the Bologna scheduling problem.
+In the Bologna scheduling problem a student tries to book his/her courses in categories,
+such that he/she will meet all the requirements to pass the study program
+when all booked courses are successfully completed.
+
+As this application is created as part of a project for a Functional Programming course, 
+its design should incorporate concepts of functional programming.
+Therefore, this report will pay special attention to the concepts we incorporated during the design of the application, 
+and why we chose to use them.
+
+The secondary goal of this project was, for us, to learn a new programming language
+and to get more familiar with applying functional programming concepts in a real application.
+We chose Scala as the language for this project, as none of us had used it before.
+
 %===========   The problem domain   ============
 
 \section{The problem domain}
+\label{sec:problem-domain}
 In this section, a short description of the Bologna scheduling problem will be given.
 Then we will further specify the problem that we set out to solve and outline the scope of this project.
 
@@ -45,7 +66,7 @@ The problem of booking Modules in Categories in such a way that the total requir
 	%===========   The problem domain for this project   ============
 
 \subsection{The problem domain for this project}
-In this section, we will first discuss the main entities which define an instance of the Bologna scheduling problem.
+We will first discuss the main entities which define an instance of the Bologna scheduling problem.
 Then we will briefly touch upon the extend of the problem domain and what the scope for this project was.
 
 		%===========   The problem domain for this project   ============
@@ -83,35 +104,64 @@ We will now briefly discuss some \emph{optimization goals} the student might hav
 These will be discussed in more detail, along with other extensions of the application, in 
 \hyperref[sec:future]{Section \ref*{sec:future}}
 
-For example, modules are usually given only during certain time periods (like quarters or semesters), and a student might want to balance the ECTS load as evenly as possible over all time-periods.
-Alternatively, she might want to minimize the time required to finish all booked modules, minimize the amount of ECTS she won't get credit for, or some combination of these optimization goals.
+Modules are usually given only during certain time periods (like quarters or semesters),
+and a student might want to balance the ECTS load as evenly as possible over all time-periods.
+Alternatively, she might want to minimize the time required to finish all booked modules, 
+minimize the amount of ECTS she won't get credit for, 
+or some combination of these optimization goals.
 
 For this project we will focus only on the optimization goal of minimizing the amount of booked ECTS points.
 This comes down to minimizing the amount of booked ECTS points for which the student won't get credit (overflowing Category.max\_ects or exceeding total\_ects).
 
-%============   The general approach   ==========
 
-\section{The general approach}
+
+
+%============   Design of the application   ==========
+
+\section{Design of the application}
+\label{sec:design}
+This section will describe the design process of the application.
+It will pay specific attention to the functional programming concepts that we
+chose to use.
+
+First, the general approach we decided to take (constraint programming) is discussed,
+as well as why it was chosen.
+Then, the application will be broken down into the steps required to solve our problem.
+For these steps we will briefly discuss whether they are suited for the application
+of functional programming concepts.
+Finally, we will outline the design of the two main parts of the application:
+the user interface (UI) and the server.
+
+	%============   The general approach   ==========
+
+\subsection{The general approach: constraint programming}
+\label{sec:general-approach}
 Due to time constraints, the domain of the problem has been restricted as described in
 \hyperref[sec:problem-scope]{Section \ref*{sec:problem-scope}}.
-We chose to use Constraint Programming to tackle the problem, as this allows the addition of extra constraints later on.
+We chose to use Constraint Programming to tackle the problem, 
+as this allows the addition of extra constraints later on.
+Ensuring that we can easily extend the application after the first version is complete.
+
 The problem can be rewritten as a constraint model, as described in 
 \hyperref[sec:constraint-model]{Section \ref*{sec:constraint-model}}, which can in turn be solved by a constraint solver.
 
-This project was also meant as a Scala learning experience, so we limied the possible choices for constraint solvers to those with a Scala interface.
-We compared two possible constraint solvers: OscaR \cite{oscar} and Copris \cite{copris}.
+		%============   Picking a constraint solver   ==========
+
+\subsubsection{Picking a constraint solver}
+As this project was also meant as a Scala learning experience, 
+we limited the possible choices for constraint solvers to those with a Scala interface.
+We compared two such constraint solvers: OscaR \cite{oscar} and Copris \cite{copris}.
 
 Copris seems to be rather new and lacks English documentation, apart from the rather limited API scaladoc.
 It offers a more concise interface to constraint programming than Oscar, but has no built in optimization support like minimize or maximize.
 OscaR on the other hand has an English wiki, although with broken links, but there is also a blog with some documented examples \cite{hakank}.
 Furthermore, they offer a builtin minimize function.
 
-
 Based on documentation and the presence of a minimization function which can be used for optimization goals, we went for OscaR.
 
-%============   Design of the application   ==========
+		%============   The problem as constraint model   ==========
 
-\section{Design of the application}
+\subsubsection{The problem as constraint model}
 \label{sec:constraint-model}
 Given a problem instance as discussed in
 \hyperref[sec:problem-parts]{Section \ref*{sec:problem-parts}}, 
@@ -146,6 +196,70 @@ we can rewrite the problem into the following constraint model:
 	the optimization goal is to minimize the amount of booked ECTS:
 	 $minimize(\sum_{c\in Categories}booked_c)$
 \end{description}
+
+	%============   Breakdown of the system   ==========
+
+\subsection{Breakdown of the application}
+\label{sec:breakdown}
+Here we will break down the steps required for our application and
+try to indentify the places where functional programming concepts can really shine.
+Then, we will discuss the design of each part of the system in turn.
+
+The application will consist of the following steps:
+\begin{enumerate}
+	\item Web user interface (UI) to ask the user to create modules and categories
+	and indicate where the modules can be booked.
+	\item Gathering the user supplied information into some data format.
+	\item Passing this data to the server.
+	\item Transforming the data into some kind of format OscaR understands.
+	\item Running OscaR.
+	\item Mapping the results back to a user readable data format.
+	\item Passing the solution to the client.
+	\item Displaying the solution.
+\end{enumerate}
+The UI will involve IO, so it will inherently be stateful.
+This means it will not be very easy to apply functional programming concepts to the UI.
+The user interface will be discussed in more detail in 
+\hyperref[sec:design-ui]{Section~\ref*{sec:design-ui}}.
+
+Data transformation on the other hand is where functional programming shines,
+allowing for very concise notation and no side-effects.
+Data transmission will be taken care of by some libraries (jQuery and scalatra), 
+so we will not discuss it any further.
+
+This only leaves running OscaR, which has an imperative interface, 
+where constraint variables and constraints should be added to a CPSolver object.
+The Solver is mutated, and every time you add a constraint 
+the involved constraint variables are updated.
+Obviously, this means there are side-effects to running OscaR.
+Therefore, the OscaR operations should be encapsulated and the functional style data
+transformation should be shielded from the side effects.
+A monad is the obvious choice for this situation.
+
+
+	%===========   Design of the UI   ==========
+\subsection{The User Interface}
+\label{sec:design-ui}
+\subsubsection{Enabling user-generated content}
+{\Large TODO:} Alon
+\subsubsection{Obtaining data for transmission}
+{\Large TODO:} Joey
+
+		%===========   Design of the server   ==========
+\subsection{The server-side}
+\label{sec:design-server}
+\subsubsection{Obtaining data from the client}
+{\Large TODO:} Joey
+\subsubsection{The side-effect free constraint model}
+{\Large TODO:} Volker
+\subsubsection{The OscaR monad}
+{\Large TODO:} Volker
+
+
+%===========   The implementation process   ==========
+\section{The implementation process}
+\label{sec:impl}
+{\Large TODO:} create structure and discuss stuff
 
 %===========   Future Research   ==========
 

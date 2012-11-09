@@ -1,64 +1,27 @@
 package com.bolognese.app
 
-import org.scalatra._
-import org.scalatra.ActionResult._
-import scalate.ScalateSupport
-import oscar.cp.modeling._
-import oscar.search._
-import oscar.cp.core._
-import com.bolognese.DecisionTable
-import com.bolognese.Module
+import org.scalatra.scalate.ScalateSupport
+import org.scalatra.ScalatraServlet
+
 import com.bolognese.Category
-import com.bolognese.Solver
-import com.bolognese.State
-import scala.util.parsing.json.{JSON => JSON}
-import net.liftweb.json._
-import Serialization.{read, write => swrite}
-import com.bolognese.ProblemModel
-import com.bolognese.CPMVarInt
-import com.bolognese.CPMIntSum
-import com.bolognese.CPMIntMul
-import com.bolognese.CPMIntRef
-import com.bolognese.CPMIntSum
-import scala.collection.immutable.Map
-import com.bolognese.CPMIntGtEq
-import com.bolognese.CPMIntMul
-import com.bolognese.CPMIntRef
-import com.bolognese.CPMIntGtEq
-import com.bolognese.CPMIntLtEq
-import com.bolognese.CPMIntGtEq
-import com.bolognese.CPMIntMinimum
 import com.bolognese.ConstraintModel
+import com.bolognese.Module
 import com.bolognese.OscaR
 
+import net.liftweb.json.Serialization.read
+import net.liftweb.json.Serialization.{write => swrite}
+import net.liftweb.json.NoTypeHints
+import net.liftweb.json.Serialization
+import net.liftweb.json.parse
+import oscar.cp.modeling.CPSolver
 
+/**
+ * The main API to the server.
+ * This ScalatraServlet defines all API calls that can be done.
+ */
 class BologneseServlet extends ScalatraServlet with ScalateSupport {
-  get("/") {
-    contentType = "text/JSON"
-    implicit val formats = Serialization.formats(NoTypeHints)
-
-    val cp = CPSolver()
-
-    val totalEcts = 17
-
-    val categories = List(new Category(0, "Compulsory", 10, 33),
-			  new Category(1, "Specialization", 7, 7))
-
-    val modules = List(new Module(0, "Methods", 5, List(0)),
-		       new Module(1, "Computer Architecture", 5, List(0)),
-		       new Module(2, "Computer Arithemtics", 5, List(0)),
-		       new Module(3, "Processor Design Project", 5, List(1)),
-		       new Module(4, "Intro Computer Enginerring", 2, List(1)),
-		       new Module(5, "Parallel Algorithms", 6, List(0)))
-
-    val decisionTable = new DecisionTable(cp, categories, modules)
-    
-    var newState = Solver.solve(new State(cp, categories, modules,
-                                          decisionTable, totalEcts))
-    swrite(newState)
-  }
   
-    get("/monadtest") {
+    get("/") {
         val totalEcts = 17
         val categories = List(new Category(0, "Compulsory", 10, 33),
         new Category(1, "Specialization", 7, 7))
@@ -69,26 +32,22 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 		    new Module(4, "Intro Computer Enginerring", 2, List(1)),
 		    new Module(5, "Parallel Algorithms", 6, List(0)))
 	    val model = ConstraintModel.fromBolognese(modules, categories, totalEcts)
-//	    val res = Solver.solve(model).map(x=>x.name+" = "+x.value)
 	    val res = OscaR.create(model)
 	    val x = for (
-	        vs <- res;
-	        ys <- res
-	    )yield vs++ys
-	    
-	    
+	        vs <- res
+	    ) yield {
+	        for (c<-categories) yield (
+	        	(
+	        		c,
+	        		(for (v<-vs.filter(v=>v.name.endsWith(":"+c.id) && v.value == 1)) yield
+	            		modules.filter(m=>v.name.startsWith(m.id+":"))).flatten
+	        	)
+	        )
+	    } 
+        val y = x.map(x=>x.toMap)
+	    val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
+	    z.apply
     }
-  
-  post("/posttest") {
-    implicit val formats = Serialization.formats(NoTypeHints)
-//    val state = read[State](request.body)
-    val model = read[ProblemModel](request.body)
-    val cp = new CPSolver()
-    val decisionTable = new DecisionTable(cp, model.categories, model.modules)
-    var newState = Solver.solve(new State(cp, model.categories, model.modules,
-                                          decisionTable, model.totalEcts))
-    swrite(newState)
-  }
 
   notFound {
     // remove content type in case it was set through an action
@@ -100,6 +59,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 
+  // TODO, seems like a test of Joey
   post("/solve") {
     contentType = "application/json"
     response.setHeader("Access-Control-Allow-Origin", "*")
@@ -108,6 +68,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     swrite(parse(""" { "hi" : [1,2,3] } """))
   }
 
+  //TODO delete all of this if it remains unused
   get("/solve") {
     var catId : Int = 0
     def fetchCategories() : List[Category] = {
@@ -149,7 +110,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     contentType = "application/json"
     implicit val formats = Serialization.formats(NoTypeHints)
     try {
-      val oldState = read[State](request.body) // Results in a net.liftweb.json.MappingException: No usable value for totalEcts Did not find value which can be converted into int
+//      val oldState = read[State](request.body) // Results in a net.liftweb.json.MappingException: No usable value for totalEcts Did not find value which can be converted into int
       val cp = CPSolver()
       val totalEcts = 17
  
@@ -195,10 +156,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     
       val categories = fetchCategories()
       val modules = fetchModules(categories)
-      val decisionTable = new DecisionTable(cp, categories, modules)
-      var newState = Solver.solve(new State(cp, categories, modules,
-                                            decisionTable, totalEcts))
-      swrite(newState)
+      
     } catch {
       case me : net.liftweb.json.MappingException => {
         // No world state yet, so create it
@@ -208,9 +166,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
         
         val categories = fetchCategories()
         val modules = fetchModules(categories)
-        val decisionTable = new DecisionTable(cp, categories, modules)
-        var newState = Solver.solve(new State(cp, categories, modules,
-                                              decisionTable, totalEcts))
+       
         swrite(parse("""{ "hi" : [1,2,3] }"""))
       }
     }

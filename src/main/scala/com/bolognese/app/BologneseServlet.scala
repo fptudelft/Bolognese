@@ -178,7 +178,6 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
       for (vs <- res) yield {
         for (c <- categories) yield (c, filteredModules(vs, c))
       }
-    println("type of x:" + )
     val y = x.map(x=>x.toMap)
     val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
     z.apply

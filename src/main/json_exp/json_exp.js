@@ -109,7 +109,9 @@ function sendRequest(jsonData) {
 
 $(document).ready(function() {
     var jsonData = { 'categories': fetchCategoriesFrom($("#CategoriesTable")),
-                     'modules':    fetchModulesFrom($("#ModulesTable")) };
+                     'modules':    fetchModulesFrom($("#ModulesTable")),
+                     'totalEcts':  17 }; // TODO remove this hardcoded
+                                         // magic number
 
     $('#send-req').click( function(){ sendRequest(jsonData) } );
 

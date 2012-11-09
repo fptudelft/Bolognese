@@ -21,7 +21,8 @@ import oscar.cp.modeling.CPSolver
  */
 case class JsonData (
   val categories : List[Map[String, List[String]]],
-  val modules : List[Map[String, List[String]]]
+  val modules : List[Map[String, List[String]]],
+  val totalEcts : Int
 )
 
 /**
@@ -102,8 +103,6 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
         val minEcts : Int = cat.get(C.CAT_MIN_ECTS).get(0).toInt
         val maxEcts : Int = cat.get(C.CAT_MAX_ECTS).get(0).toInt
 
-        // catToIdMap = catToIdMap ++ Map(name -> catId)
-        // idToCatMap = idToCatMap ++ Map(catId -> name)
         catsList = catsList ++ List(new Category(catId, name, minEcts, maxEcts))
       }
       catsList
@@ -145,11 +144,29 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     implicit val formats = Serialization.formats(NoTypeHints)
     val jsonData = read[JsonData](request.body)
 
+    val totalEcts : Int = jsonData.totalEcts
     val categories : List[Category] = categoriesFrom(jsonData)
     val catToIdMap : Map[String, Int] = catToIdMapFrom(categories)
     val idToCatMap : Map[Int, String] = idToCatMapFrom(categories)
     val modules : List[Module] = modulesFrom(jsonData, catToIdMap)
 
+    val model = ConstraintModel.fromBolognese(modules, categories, totalEcts)
+    val res = OscaR.create(model)
+    
+    val x = for ( vs <- res ) yield {
+      for (c<-categories) yield (
+	(c,
+	 (for (v<-vs.filter(v=>v.name.endsWith(":"+c.id) && v.value == 1)) yield
+	   modules.filter(m=>v.name.startsWith(m.id+":"))).flatten
+       )
+      )
+    } 
+    val y = x.map(x=>x.toMap)
+    val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
+    z.apply
+
+    println()
+    println("total ects: " + totalEcts)
     println()
     categories.foreach (println)
     println()

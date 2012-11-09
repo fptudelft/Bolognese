@@ -3,13 +3,56 @@
   <head>
     <title> Json POST </title>
     
+    <script type="text/javascript" src="./underscore-1.4.2.js"></script>
     <script type="text/javascript" src="./jquery-1.8.2.js"></script>
     <script type="text/javascript" src="./json_exp.js"></script>
   </head>
   
   <body>
-    First name: <input id="name-input" type="text"><br>
-    <!-- <button type="button" onclick="sendRequest()">Send request</button><br> -->
-    <button type="button" id="send-req">Send request using id</button><br>
+    First name: <input id="name-input" type="text">
+    <br>
+    <button type="button" id="send-req">Send request using id</button>
+    <button type="button" id="logTables">Log the tables</button>
+
+    <br><br><br><br>
+
+    <table id="CategoriesTable">
+      <tr class="CTColumnName">
+        <th>Name</th>
+        <th>Minimum Points</th>
+        <th>Maximum Points</th>
+      </tr>
+      <tr class="CTColumnValue">
+        <td>Compulsory</td>
+        <td>5</td>
+        <td>10</td>
+      </tr>
+      <tr class="CTColumnValue">
+        <td>Specialization</td>
+        <td>15</td>
+        <td>30</td>
+      </tr>
+    </table>
+    
+    <br>
+
+    <table id="ModulesTable">
+      <tr class="MTColumnName">
+        <th>Name</th>
+        <th>Points</th>
+        <th>Bookable Categories</th>
+      </tr>
+      <tr class="MTColumnValue">
+        <td>Functional Programming</td>
+        <td>5</td>
+        <td>Specialization</td>
+      </tr>
+      <tr class="MTColumnValue">
+        <td>Methodology</td>
+        <td>5</td>
+        <td>Specialization</td>
+      </tr>
+    </table>
+
   </body>
 </html>

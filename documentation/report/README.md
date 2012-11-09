@@ -8,7 +8,8 @@ The biblatex package is already installed in the MikTeX distribution for Windows
 
 On Ubuntu, it is located in the biblatex package (apt-get install biblatex).
 
-On Mac or other systems... I have no idea TODO
+On OS X, bibtex can be installed by installing the macports
+"texlive-bibtex-extra" package.
 
 ###Compilation
 

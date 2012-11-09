@@ -266,12 +266,42 @@ to maximize our learning experience.
 Therefore, we chose to use a reactive programming approach with the Flapjax library \cite{flapjax} to allow the creation, validation and display of Categories and Modules.
 
 \subsubsection{Obtaining data for transmission}
-The solving of the actual problem is done on the server, 
-so the user-generated problem instance has to be transmitted.
-To obtain the data of the problem instance, 
-we process the displayed HTML tables.
+\label{sec:ObtainingData}
+Solving the actual problem is done on the server, so the
+user-generated problem instance has to be transmitted. To obtain the
+data of the problem instance, we process the displayed HTML tables.\\
 
-{\Large TODO:} Joey
+While this approach would not be advisable for production systems
+(there a single data model that propagates its data both to the HTML
+and to other parts of the logic), given the scope and time constraints
+of this project it is an acceptable and technically simple tradeoff.\\
+
+There are 2 kinds of HTML table in this context:
+\begin{itemize}
+\item for Categories
+\item for Modules
+\end{itemize}
+
+Each table is marked in a specific manner (more about this in section
+\ref{sec:ProcessingClientData}), and the client side uses these
+markings are to extract relevant information.
+One single mechanism (called the \textit{mappings mechanism} by its
+author as that is what is happening conceptually) is used by the
+client side Javascript code to retrieve information for both
+categories and modules, and it is flexible enough to adapt to changes
+to the column layout in either table without requiring code changes.\\
+
+To achieve this flexibility, the mappings mechanism extracts both the
+column layout (which includes the column names, the column ordering
+and the number of columns and is formed by the HTML table header) and
+the information contained in the HTML table data rows and creates,
+per data row, a mapping (hence the name) from the header layout to
+that particular instance described by the data row. Hence each row
+results in a Javascript map.\\
+
+All the mappings are then collected and transformed into JSON before
+being sent to the server using a POST request.
+
 
 		%===========   Design of the server   ==========
 \subsection{The server-side}
@@ -286,7 +316,20 @@ Finally, we will discuss the design of the OscaR monad,
 which encapsulates the side-effecting OscaR operations.
 
 \subsubsection{Obtaining data from the client}
-{\Large TODO:} Joey
+
+Upon receiving a POST request to the ``/'' URI, the server
+proceeds to transform the data contained in the POST variables to a
+Scala object structurally very similar to the JSON object sent by the
+client side Javascript code (see section
+\ref{sec:ObtainingData}). This is all done by Scalatra framework code
+and takes almost no effort on the part of the programmer, save for
+defining a Scala case class (in our case calles JsonData) for
+deserialization purposes.\\
+
+Once this step has been completed, the data contained within the
+object is harvested and transformed to a format the OscaR monad can
+understand.
+
 \subsubsection{The side-effect free constraint model}
 Since the current constraint model of OscaR has side effects,
 a new constraint model should be created.
@@ -338,12 +381,26 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 \subsubsection{Flapjax}
 \include{uiimpl}
 
-\subsubsection{TODO:Joey, Underscore js}
-{\Large TODO:} Joey
+\subsubsection{Underscore.js}
 
+Underscore.js is a Javascript library mainly intended to facilitate
+functional programming style in Javascript. To that end it provides a
+relatively elaborate set of functions, among which are more
+``standard'' functional-style functions such as map, reduce (foldl),
+reduceRight (foldr), zip, filter etc. While Underscore.js provides a
+lot more functionality than just these functions, it is mainly used
+because of the functionality named above.\\
+
+Both the setup and the usage are extremely easy and in the experience
+of the authors the library works without so much as a single
+hitch. Both setup and installation are strongly reminiscent of jQuery,
+except that instead of \textbf{\$}.$<$function\_name$>$,
+\textbf{\_}.$<$function\_name$>$ is used. Needless to say, the
+satisfaction about this library is extremely high.\\
 
 \subsection{The server-side}
 \subsubsection{Processing the data from the client}
+\label{sec:ProcessingClientData}
 {\Large TODO:} Joey
 
 \subsubsection{Creating a constraint model}

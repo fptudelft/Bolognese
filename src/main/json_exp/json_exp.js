@@ -15,10 +15,22 @@
 function mappingsFrom(htmlTable, headerHtmlClass, valueHtmlClass) {
     // Let's build a little language to express what we want more clearly
 
-    var textFrom = function(item) { return item.textContent.split(','); };
+    // textFrom extracts the text as a string
+    var textFrom = function(item) { return item.textContent; };
+
+    // textItemsFrom splits the text on commas, puts the
+    // result into a list and trims the list elements
+    var textItemsFrom = function(item) {
+        var trimString = function(c) { return c.trim(c); }
+        return _.map(textFrom(item).split(','), trimString);
+    };
 
     var valuesFrom = function(htmlValueRow) {
         return _.map(htmlValueRow.children, textFrom);
+    };
+
+    var valuesAsListsFrom = function(htmlValueRow) {
+        return _.map(htmlValueRow.children, textItemsFrom);
     };
 
     /**
@@ -46,7 +58,7 @@ function mappingsFrom(htmlTable, headerHtmlClass, valueHtmlClass) {
 
     // By definition there's exactly one header row, so the indexing op is safe
     var headerRow = _.map(htmlTable.find(headerHtmlClass), valuesFrom)[0];
-    var valueRows = _.map(htmlTable.find(valueHtmlClass), valuesFrom);
+    var valueRows = _.map(htmlTable.find(valueHtmlClass), valuesAsListsFrom);
     return _.map(valueRows, newMapping);
 }
 
@@ -96,16 +108,6 @@ function sendRequest(jsonData) {
 }
 
 $(document).ready(function() {
-    // var jsonData2 = {
-    //     'cat': [ newCategory('Compulsory', 10, 33),
-    //              newCategory('Specialization', 7, 7) ],
-    //     'mod': [ newModule('Methodology of Science and Engineering', 5, 'Compulsory'),
-    //              newModule('Computer Architecture', 5, 'Compulsory'),
-    //              newModule('Computer Arithemtics', 5, 'Compulsory'),
-    //              newModule('Processor Design Project', 5, 'Specialization'),
-    //              newModule('Intro Computer Engineering', 2, 'Specialization'),
-    //              newModule('Parallel Algorithms', 6, 'Compulsory') ] };
-
     var jsonData = { 'categories': fetchCategoriesFrom($("#CategoriesTable")),
                      'modules':    fetchModulesFrom($("#ModulesTable")) };
 

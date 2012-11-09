@@ -159,22 +159,23 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     def filteredModules(vs : Collection[CPMFixedVar],
                         c : Category) : Iterable[Module] = {
       
-      def varsInCategory() : Collection[CPMFixedVar] = {
+      def bookedVarsInCategory() : Collection[CPMFixedVar] = {
         // Closes over the vs and c vars from the container function
         vs.filter(v => v.name.endsWith(":"+c.id) && v.value == 1)
       }
       
-      def filteredModule(v : CPMFixedVar) : List[Module] = {
-        modules.filter((m : Module) => v.name.startsWith(m.id+":"))
+      def moduleCorrespondingTo(v : CPMFixedVar) : Module = {
+        // Each module has unique module id, therefore 
+        // there can only be one module in the list
+        modules.filter((m : Module) => v.name.startsWith(m.id+":")).head
       }
       
-      val res : Iterable[List[Module]] = for (v <- varsInCategory())
-                                         yield filteredModule(v)
-      res.flatten
+      return for (v <- bookedVarsInCategory())
+             yield moduleCorrespondingTo(v)
     }
     
     // val x : OscaR[(Category, Iterable[Module])] =
-    val x =
+    val x : OscaR[List[(Category, Iterable[Module])]] =
       for (vs <- res) yield {
         for (c <- categories) yield (c, filteredModules(vs, c))
       }

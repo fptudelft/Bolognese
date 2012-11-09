@@ -347,7 +347,62 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 {\Large TODO:} Joey
 
 \subsubsection{Creating a constraint model}
-{\Large TODO:} Volker
+We constructed a AST-like constraint model by creating 
+abstract and case classes. 
+The abstract classes represent types of AST-nodes, 
+while the case classes represent the AST-node constructors.
+We tried to keep the constraint model generic enough,
+so that others can also define their problems in terms of this model.
+
+Since OscaR really only offers integer variables 
+(CPVarBool is just a convenience class which extends CPVarInt),
+we only support integer variables in our model (see CPMVarInt).
+All variables should be uniquely named, 
+so they can be referenced (CPMIntRef) in constraints (AbstractCPMConstraint) later on.
+A CPMVarInt with values ranging from 1 to 15 (inclusive), 
+can then be constructed with \verb|CPMVarInt("name", 1, 15)|.
+We could use it in a constraint like 
+\verb|CPMIntLt(CPMIntRef("name"), CPMIntCons(7))|,
+which means that the variable should be strictly less than the integer constant 7.
+
+Currently we only have simple integer constraints
+like `less than' and `greater than or equals'.
+More can be added by extending AbstractCPMConstraint.
+These integer constraints can be built from one or more integer 
+(or CPMVarInt) typed expressions that extend AbstractCPMIntExp.
+
+Finally we have the AbstractCPMGoal, 
+which represents an optimization goal.
+We only implemented the bare minimum we needed,
+so the only available goal at the moment is CPMMinimize.
+This signals that you want to minimize a CPMVarInt typed
+expression.
+For example, to find a solution which minimizes $5\cdot name$ we use the goal
+\\\verb|CPMMinimize(CPMIntMul(CPMIntCons(5), CPMIntRef("name")))|.
+
+All AST-node constructors can be found in ConstraintModel.scala.
+
+\hspace*{1em}\\
+To process such a model into OscaR form, 
+we created the oscarize function, which is located in OscaR.scala.
+Given our time constraints, 
+this oscarize function was the closest we could get to the idea of fold algebras.
+
+Running the oscarize function on CPMVarInts returns CPVarInts,
+which are used by OscaR during the exploration phase.
+
+Constraints in OscaR are added in a constraints block which should be of type
+\verb|=>Unit|.
+This allows us to just use a foreach call on the collection of CPMConstraints.
+In this foreach call, the constraints will be oscarized.
+The oscarize function should add the constraint represented by the CPMConstraint
+to the CPSolver object.
+To do this, we recursively call oscarize on the CPMIntExps
+that this constraint consists of.
+
+If you want to extend our constraint model,
+you only have to add a case class and an entry in the correct oscarize function.
+
 
 \subsubsection{Creating and using the OscaR monad}
 {\Large TODO:} Volker

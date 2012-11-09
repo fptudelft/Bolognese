@@ -7,6 +7,8 @@ import com.bolognese.Category
 import com.bolognese.ConstraintModel
 import com.bolognese.Module
 import com.bolognese.OscaR
+import com.bolognese.CPMFixedVar
+import com.bolognese.CPModel
 
 import net.liftweb.json.Serialization.read
 import net.liftweb.json.Serialization.{write => swrite}
@@ -150,17 +152,33 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     val idToCatMap : Map[Int, String] = idToCatMapFrom(categories)
     val modules : List[Module] = modulesFrom(jsonData, catToIdMap)
 
-    val model = ConstraintModel.fromBolognese(modules, categories, totalEcts)
-    val res = OscaR.create(model)
+    val model : CPModel =
+      ConstraintModel.fromBolognese(modules, categories, totalEcts)
+    val res : OscaR[Collection[CPMFixedVar]] = OscaR.create(model)
+
+    def filteredModules(vs : Collection[CPMFixedVar],
+                        c : Category) : Iterable[Module] = {
+      
+      def varsInCategory() : Collection[CPMFixedVar] = {
+        // Closes over the vs and c vars from the container function
+        vs.filter(v => v.name.endsWith(":"+c.id) && v.value == 1)
+      }
+      
+      def filteredModule(v : CPMFixedVar) : List[Module] = {
+        modules.filter((m : Module) => v.name.startsWith(m.id+":"))
+      }
+      
+      val res : Iterable[List[Module]] = for (v <- varsInCategory())
+                                         yield filteredModule(v)
+      res.flatten
+    }
     
-    val x = for ( vs <- res ) yield {
-      for (c<-categories) yield (
-	(c,
-	 (for (v<-vs.filter(v=>v.name.endsWith(":"+c.id) && v.value == 1)) yield
-	   modules.filter(m=>v.name.startsWith(m.id+":"))).flatten
-       )
-      )
-    } 
+    // val x : OscaR[(Category, Iterable[Module])] =
+    val x =
+      for (vs <- res) yield {
+        for (c <- categories) yield (c, filteredModules(vs, c))
+      }
+    println("type of x:" + )
     val y = x.map(x=>x.toMap)
     val z = y.map(m=>m.map(t=>(t._1.name, t._2.map(m=>m.name))))
     z.apply

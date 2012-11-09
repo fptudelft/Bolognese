@@ -22,6 +22,8 @@ and an OscaR monad, which is created from the constraint model and encapsulates 
 \end{abstract}
 
 \newpage
+\tableofcontents
+\newpage
 
 %===========   Introduction   ============
 
@@ -332,9 +334,18 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 %===========   The implementation process   ==========
 \section{The implementation process}
 \label{sec:impl}
-{\Large TODO:} create structure and discuss stuff
+In this section we will discuss our implementation of the different parts
+of the application.
+We will also discuss the problems we encountered during this process.
 
 \subsection{User Interface}
+The general approach we follow during the implementation of the user interface
+was discussed in
+\hyperref[sec:design-ui]{Section~\ref*{sec:design-ui}}.
+
+First, we will discuss how we used Flapjax to allow the user to create content.
+Then, our use of Underscore js is for obtaining and transforming this data
+is discussed.
 \subsubsection{Flapjax}
 \include{uiimpl}
 
@@ -343,8 +354,21 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 
 
 \subsection{The server-side}
+The server-side is called with a Bologna scheduling problem instance
+and needs to return a solution to the user.
+
+First, the processing of the data from the client is discussed.
+Then, we discuss the constraint model which will serve as input to create
+an OscaR monad.
+When we are done mapping the OscaR result to a properly formatted solution,
+we extract the value from the OscaR monad (unleashing the side-effects)
+and return this value to the client.
+The implementation of the OscaR monad will be discussed at the end of this section.
 \subsubsection{Processing the data from the client}
 {\Large TODO:} Joey
+
+
+		%=========   Creating a constraint model   =========
 
 \subsubsection{Creating a constraint model}
 We constructed a AST-like constraint model by creating 
@@ -403,10 +427,53 @@ that this constraint consists of.
 If you want to extend our constraint model,
 you only have to add a case class and an entry in the correct oscarize function.
 
+		%=========   Creating and using the OscaR monad   =========
 
 \subsubsection{Creating and using the OscaR monad}
-{\Large TODO:} Volker
+The OscaR monad and its four standard functions unit, map, join and flatMap as well as
+the creation of a meaningful OscaR monad from a constraint model will now
+be discussed.
 
+\hspace*{1em}\\
+The OscaR monad can be found in OscaR.scala.
+\verb|OscaR a| is essentially a function of type \verb|()->a|.
+We tried to achieve this in Scala by extending the Function0 class.
+However, this did not achieve what we ultimately wanted: 
+that we could use something like function composition on it,
+or allow a function of the correct type to be seen as an OscaR monad.
+
+This made the creation of the OscaR monad a bit more trickier than we had hoped.
+We used the example of James Iry's blog\cite{elephants} as a template for our
+monad implementation.
+First we have an abstract class for the monad, 
+which has contains the map, join and flatMap functions.
+Since this is Scala, the monad is a class and the functions are methods.
+We tried using getting flatten to work with the `this' reference as well,
+just like the other methods.
+However, we could not get this to work, due to our limited experience with Scala.
+
+The real monad is the private OscarImpl class.
+This class is private in the OscaR monad factory object called OscaR,
+because there is no need to manualy construct an instance.
+Instead, you can use the unit function in this factory object,
+which wraps the given value in an OscaR monad, exactly like it should.
+
+The encapsulating behaviour of the OscaR monad is achieved using a
+lazy expression, 
+which is only evaluated when you try to get the value out of the monad.
+Since the OscaR monad is really just a function, 
+this happens when you call the function 
+(in Scala you should apparently use apply method for that).
+
+\hspace*{1em}\\
+Now that we have the monad with its four functions,
+we can start using it.
+The create method of the OscaR factory object creates a new OscaR monad
+from a constraint model.
+The result of this OscaR is then mapped to a proper solution in BologneseServlet.scala,
+while still remaining inside the OscaR monad.
+Then finally apply is called (unleashing the side-effects) 
+and the solution is returned to the client.
 
 %===========   Conclusion   ==========
 

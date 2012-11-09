@@ -240,9 +240,39 @@ A monad is the obvious choice for this situation.
 	%===========   Design of the UI   ==========
 \subsection{The User Interface}
 \label{sec:design-ui}
+The user interface will be a web application, 
+where the user can create a problem instance and ask the server to solve it.
+Due to the statefull nature of IO, and therefore of user interfaces,
+it was not easy to apply functional programming concepts to the user interface.
+
+First, we will discuss the creation of a problem instance, 
+and how we planned on adding a functional flavour to it.
+Then, the process of obtaining the data that the user created and sending
+it to the server is discussed.
+This part consists of obtaining data and transforming it, 
+allowing us to use concepts like Functors for easy transformation.
+
+		%===========  Enabling user-generated content   ==========
 \subsubsection{Enabling user-generated content}
-{\Large TODO:} Alon
+To enable the user to create a problem instance of the Bologna scheduling problem
+the user inteface needs to be able to do the following things:
+\begin{itemize}
+	\item adding Categories and Modules
+	\item displaying Categories and Modules
+	\item validating user input
+\end{itemize}
+Since it is a web interface, we will use the `native languages of the web' HTML, CSS,
+and JavaScript.
+We decided to try something new for the user interface, 
+to maximize our learning experience.
+Therefore, we chose to use a reactive programming approach with the Flapjax library \cite{flapjax} to allow the creation, validation and display of Categories and Modules.
+
 \subsubsection{Obtaining data for transmission}
+The solving of the actual problem is done on the server, 
+so the user-generated problem instance has to be transmitted.
+To obtain the data of the problem instance, 
+we process the displayed HTML tables.
+
 {\Large TODO:} Joey
 
 		%===========   Design of the server   ==========
@@ -260,6 +290,31 @@ A monad is the obvious choice for this situation.
 \section{The implementation process}
 \label{sec:impl}
 {\Large TODO:} create structure and discuss stuff
+
+\subsection{User Interface}
+\subsubsection{Flapjax}
+{\Large TODO:} Alon
+
+\subsubsection{TODO:Joey, Underscore js}
+{\Large TODO:} Joey
+
+
+\subsection{The server-side}
+\subsubsection{Processing the data from the client}
+{\Large TODO:} Joey
+
+\subsubsection{Creating a constraint model}
+{\Large TODO:} Volker
+
+\subsubsection{Creating and using the OscaR monad}
+{\Large TODO:} Volker
+
+
+%===========   Conclusion   ==========
+
+\section{Conclusion}
+\label{sec:conclusion}
+\textbf{TODO}
 
 %===========   Future Research   ==========
 

@@ -1,0 +1,95 @@
+\label{sec:impl-ui-alon}
+The user can create Categories and Modules.
+When the user creates a new Category or Module it is displayed
+as a row in an HTML table.
+Once the user is ready and wants to compute a schedule,
+the data is read from these tables and sent to the server.
+For the creation of such table rows, displaying them and validating 
+the user input, we used the Flapjax library.
+We will now discuss how the implementation process using 
+the Flapjax library went.
+
+Adding a row of data to a table is handled with input boxes. We extract the
+values using a "behavior" or "signal". We then use special "liftB" functions
+, which are provided by the library, to apply validation functions to the
+streams and thus extract booleans. Each input is validated separately and then,
+using the "andB" function, we determine whether the complete input-row is valid.
+
+We display this validation result using a set of "insertValueB" functions.
+The functions are dependent on the validated streams mentioned above. This
+means they are executed on changes to the valid state of the extracted input.
+As a result they switch two values for HTML properties (such as border-color)
+directly on DOM-elements and choose depending on the valid-state they are
+dependent on.
+
+Functional Reactive Programming, and Flapjax specifically, proved to be useful
+for achieving the validation tasks mentioned so far. 
+Adding a new row to the table on the
+other hand was challenging and we do not consider our solution elegant.
+
+The first problem we had to solve is that our "behaviors" for the input fields
+are all independent from each other. At what point should we add the new row?
+We cannot react to the full-row-validity because we need to keep in mind that
+the user might not want to add every possible valid input combination. Further,
+what if they want to add two equal rows? The solution is to introduce an "event",
+bound to a submit button. The button is hidden and shown depending on the
+validation state of the row using the same "inputValueB" mechanism mentioned
+above. This simple technique ensures that no invalid data will be added by
+the user.
+
+The submit button event is coupled with a series of "snapshot" functions which
+extract a value at the time of the event and from the input signals. Here we
+encounter the problem that our data is tabular and every extracted value needs
+to be at the right place in the table. The collection of all input data does not
+follow this ordering per se. We solved this by introducing specific delays for
+each input which just means that we "sample" the input streams into the data
+format we need. The "sampled" values are then combined into a single, "serialized
+and ordered" event using a "merge" statement.
+
+The next problem arises quickly: Given a continuous stream of serialized and
+ordered "sampled" input values, how can we group them into HTML table rows?
+
+The main difficulty is that HTML input and output tags have to be matched. We
+thus would like to have some function which extracts n-samples and packs them
+into a "$<$tr$>$"-tag, giving each corresponding input value its own "$<$td$>$"-tag.
+It is clear that we need to use some form of fold function, or in the terms of
+Flapjax "collect". Unfortunately, this showed to be very hard to achieve using
+Flapjax. The final solution looks like this:
+{\footnotesize\begin{verbatim}
+  var categoriesCollectedE = categoriesAllE.collectE([], function(item, rest) {
+         if(item === -1) {
+           var a = rest.pop();
+           var b = rest.pop();
+           var c = rest.pop();
+           rest.push(TR(c, b, a));
+         } else {
+           rest.push(TD(item));
+        }
+        return rest;
+  }).mapE(function(a) {
+    return TABLE(TR(TH("Name"), TH("Minimum Points"), TH("Maximum Points")), a);
+  });
+\end{verbatim}}
+We exploit the flexibility of JavaScript and the way Flapjax implements collect
+and simply "pop" three values from the array and push them back as HTML row.
+This construct looks a lot like a stack-machine with only one instruction: -1.
+The value was additionally injected into the merge input streams from a constant
+behavior source. It is introduced because we need some mechanism for adding the
+required "$<$td$>$" tags as well. We chose "-1" as instruction because negative
+numbers are not used in our setting (as long as there is no new Bologna reform...)
+
+Finally, we map the result into a full table. This was needed, because Flapjax
+automatically wraps "unsafe" or "incomplete" HTML structures, such as table
+rows, in "$<$span$>$"-tags. By constructing the whole table from scratch on every update
+we avoid having spans in the tables which do not render correctly. The efficiency
+of such an approach is questionable.
+
+Finally, the same is done again for the Modules. The "same" code is present twice.
+This should be tackled in the future.
+
+As we have already mentioned: We are not completely happy with our results.
+The concept of Functional Reactive Programming must contain some more tricks we
+have not yet discovered in order to solve said problems. One approach which could
+be taken for the next time, is to look at algorithms and "patterns" used in hardware
+design. Actual hardware can be easily simulated using such "data-flow" concept
+and we might use some of those ideas here as well.

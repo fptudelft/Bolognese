@@ -5,4 +5,5 @@ report.blg
 report.out
 report.pdf
 report.run.xml
+uiimpl.aux
 *.swp

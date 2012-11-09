@@ -101,8 +101,6 @@ Although we can describe the general problem with the entities outlined in
 \hyperref[sec:problem-parts]{Section \ref*{sec:problem-parts}}, 
 students probably want more than just a `random' schedule, even though completing it would mean completing their study program.
 We will now briefly discuss some \emph{optimization goals} the student might have. 
-These will be discussed in more detail, along with other extensions of the application, in 
-\hyperref[sec:future]{Section \ref*{sec:future}}
 
 Modules are usually given only during certain time periods (like quarters or semesters),
 and a student might want to balance the ECTS load as evenly as possible over all time-periods.
@@ -338,7 +336,7 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 
 \subsection{User Interface}
 \subsubsection{Flapjax}
-{\Large TODO:} Alon
+\include{uiimpl}
 
 \subsubsection{TODO:Joey, Underscore js}
 {\Large TODO:} Joey
@@ -359,13 +357,47 @@ flatMap/bind/>>= : OscaR a -> (a -> OscaR b) -> OscaR b
 
 \section{Conclusion}
 \label{sec:conclusion}
-\textbf{TODO}
+Our application does what is should do:
+it solves instances of the Bologna scheduling problem as we specified.
+However, it is not going to win a beauty pageant or attract many users in its 
+current form.
 
-%===========   Future Research   ==========
+Our learning goals for this project were definitely met though,
+so we will discuss our findings related to the functional programming concepts,
+programming languages and libraries we used.
+We did not have the time to really master any of these techniques we used,
+but we got a feel for what worked for us and what did not.
 
-\section{Future Research}
-\label{sec:future}
-\textbf{TODO}
+\subsection{Reactive programming in Flapjax}
+As we have already mentioned in 
+\hyperref[sec:impl-ui-alon]{Section~\ref*{sec:impl-ui-alon}}:
+We are not completely happy with our results.
+The concept of Functional Reactive Programming must contain some more tricks we
+have not yet discovered in order to solve said problems. 
+
+One approach which could
+be taken for the next time, is to look at algorithms and "patterns" used in hardware
+design. Actual hardware can be easily simulated using such "data-flow" concept
+and we might use some of those ideas here as well.
+
+\subsection{Functional JavaScript with Underscore js}
+{\Large TODO:} Joey
+
+\subsection{Monads and Scala}
+As far as Scala goes, 
+we learned that it is not as concise as Haskell,
+and for purely functional programming we would rather use Haskell.
+
+We admit that we only scratched the surface of what Scala has to offer,
+but while creating the OscaR monad we had to do quite some juggling with classes.
+We hoped to be able to just define a few functions and be done, 
+but even though we made our monad extend the Function class,
+a function of the same type can still not be seen as an instance of the OscaR monad.
+This meant that we could not really think of our monad as a function,
+so we could not let the types do the talking (i.e. \verb|OscaR a = ()->a|),
+which made it a lot harder to express the correct behaviour.
+
+We will probably not use Scala as a functional language in the future.
 
 \printbibliography
 

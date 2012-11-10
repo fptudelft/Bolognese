@@ -4,6 +4,9 @@
 .classpath
 .settings
 
+# Generated files in documentation/
+documentation/report/auto*
+
 # sbt specific
 dist/*
 target/

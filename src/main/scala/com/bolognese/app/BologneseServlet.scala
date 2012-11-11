@@ -54,9 +54,9 @@ object Helper {
     var catsList : List[Category] = List()
     for (cat <- jd.categories) {
       val catId : Int = IdGenerator.nextId
-      val name : String = cat.get(C.CAT_NAME).get(0)
-      val minEcts : Int = cat.get(C.CAT_MIN_ECTS).get(0).toInt
-      val maxEcts : Int = cat.get(C.CAT_MAX_ECTS).get(0).toInt
+      val name : String = cat.get(Const.CAT_NAME).get(0)
+      val minEcts : Int = cat.get(Const.CAT_MIN_ECTS).get(0).toInt
+      val maxEcts : Int = cat.get(Const.CAT_MAX_ECTS).get(0).toInt
 
       catsList = catsList ++ List(new Category(catId, name, minEcts, maxEcts))
     }
@@ -68,9 +68,9 @@ object Helper {
     var modsList : List[Module] = List()
     for (mod <- jd.modules) {
       val modId : Int = IdGenerator.nextId
-      val name : String = mod.get(C.MOD_NAME).get(0)
-      val ects : Int = mod.get(C.MOD_ECTS).get(0).toInt
-      val bookableCats : List[String] = mod.get(C.MOD_BOOKABLE_CATS).get
+      val name : String = mod.get(Const.MOD_NAME).get(0)
+      val ects : Int = mod.get(Const.MOD_ECTS).get(0).toInt
+      val bookableCats : List[String] = mod.get(Const.MOD_BOOKABLE_CATS).get
       val bookableCatIds : List[Int] = bookableCats.map(c => catToIdMap.get(c).get)
 
       modsList = modsList ++ List(new Module(modId, name, ects, bookableCatIds))
@@ -132,7 +132,7 @@ object Helper {
     categories.foreach (println)
     println("------------------------------------------------------------")
     println("Modules:")
-    Modules.foreach (println)
+    modules.foreach (println)
     println("------------------------------------------------------------")
     println("result to be sent back to the user: ")
     println(result)
@@ -142,7 +142,7 @@ object Helper {
 }
 
 // Object containing constants
-object C {
+object Const {
   // Category key constants
   val CAT_NAME : String = "Name"
   val CAT_MIN_ECTS : String = "Minimum Points"

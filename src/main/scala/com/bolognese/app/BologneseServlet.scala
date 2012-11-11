@@ -10,7 +10,7 @@ import com.bolognese.OscaR
 import com.bolognese.CPMFixedVar
 import com.bolognese.CPModel
 
-import net.liftweb.json.Serialization.read
+import net.liftweb.json.Serialization.{read => sread}
 import net.liftweb.json.Serialization.{write => swrite}
 import net.liftweb.json.NoTypeHints
 import net.liftweb.json.Serialization
@@ -28,6 +28,13 @@ case class JsonData (
 )
 
 /**
+ * Case class for JSON deserialisation
+ */
+case class Result (
+  val modulesPerCategory : Map[String, List[String]]
+)
+
+/**
  * A simple closure for generating unids
  */
 object IdGenerator {
@@ -36,6 +43,80 @@ object IdGenerator {
   def nextId() : Int = {
     this.currentId = this.currentId + 1;
     this.currentId;
+  }
+}
+
+/**
+ * Object container for helper functions
+ */
+object Helper {
+  def categoriesFrom(jd : JsonData) : List[Category] = {
+    var catsList : List[Category] = List()
+    for (cat <- jd.categories) {
+      val catId : Int = IdGenerator.nextId
+      val name : String = cat.get(C.CAT_NAME).get(0)
+      val minEcts : Int = cat.get(C.CAT_MIN_ECTS).get(0).toInt
+      val maxEcts : Int = cat.get(C.CAT_MAX_ECTS).get(0).toInt
+
+      catsList = catsList ++ List(new Category(catId, name, minEcts, maxEcts))
+    }
+    catsList
+  }
+
+  def modulesFrom(jd : JsonData,
+                  catToIdMap : Map[String, Int]) : List[Module] = {
+    var modsList : List[Module] = List()
+    for (mod <- jd.modules) {
+      val modId : Int = IdGenerator.nextId
+      val name : String = mod.get(C.MOD_NAME).get(0)
+      val ects : Int = mod.get(C.MOD_ECTS).get(0).toInt
+      val bookableCats : List[String] = mod.get(C.MOD_BOOKABLE_CATS).get
+      val bookableCatIds : List[Int] = bookableCats.map(c => catToIdMap.get(c).get)
+
+      modsList = modsList ++ List(new Module(modId, name, ects, bookableCatIds))
+    }
+    modsList
+  }
+
+  def catToIdMapFrom(cats : List[Category]) : Map[String, Int] = {
+    var ctim : Map[String, Int] = Map()
+    for (cat : Category <- cats) {
+      ctim = ctim ++ Map(cat.name -> cat.id)
+    }
+    ctim
+  }
+
+  def idToCatMapFrom(cats : List[Category]) : Map[Int, String] = {
+    var itcm : Map[Int, String] = Map()
+    for (cat : Category <- cats) {
+      itcm = itcm ++ Map(cat.id -> cat.name)
+    }
+    itcm
+  }
+
+  def filteredModules(vs : Collection[CPMFixedVar],
+                      c : Category,
+                      modules : List[Module]) : Iterable[Module] = {
+
+    def bookedVarsInCategory() : Collection[CPMFixedVar] = {
+      // Closes over the vs and c vars from the container function
+      vs.filter(v => v.name.endsWith(":"+c.id) && v.value == 1)
+    }
+
+    def moduleCorrespondingTo(v : CPMFixedVar) : Module = {
+      // Each module has unique module id, therefore 
+      // there can only be one module in the list
+      modules.filter((m : Module) => v.name.startsWith(m.id+":")).head
+    }
+
+    return for (v <- bookedVarsInCategory())
+           yield moduleCorrespondingTo(v)
+  }
+
+  def resultFrom(mpc : Map[String, Iterable[String]]) : Result = {
+    var data = Map[String, List[String]]()
+    mpc foreach ( (pair) => data += (pair._1 -> pair._2.toList) )
+    Result(data)
   }
 }
 
@@ -96,87 +177,24 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
   }
   
   post("/solve") {
-
-    def categoriesFrom(jd : JsonData) : List[Category] = {
-      var catsList : List[Category] = List()
-      for (cat <- jd.categories) {
-        val catId : Int = IdGenerator.nextId
-        val name : String = cat.get(C.CAT_NAME).get(0)
-        val minEcts : Int = cat.get(C.CAT_MIN_ECTS).get(0).toInt
-        val maxEcts : Int = cat.get(C.CAT_MAX_ECTS).get(0).toInt
-
-        catsList = catsList ++ List(new Category(catId, name, minEcts, maxEcts))
-      }
-      catsList
-    }
-
-    def modulesFrom(jd : JsonData,
-                    catToIdMap : Map[String, Int]) : List[Module] = {
-      var modsList : List[Module] = List()
-      for (mod <- jd.modules) {
-        val modId : Int = IdGenerator.nextId
-        val name : String = mod.get(C.MOD_NAME).get(0)
-        val ects : Int = mod.get(C.MOD_ECTS).get(0).toInt
-        val bookableCats : List[String] = mod.get(C.MOD_BOOKABLE_CATS).get
-        val bookableCatIds : List[Int] = bookableCats.map(c => catToIdMap.get(c).get)
-        
-        modsList = modsList ++ List(new Module(modId, name, ects, bookableCatIds))
-      }
-      modsList
-    }
-
-    def catToIdMapFrom(cats : List[Category]) : Map[String, Int] = {
-      var ctim : Map[String, Int] = Map()
-      for (cat : Category <- cats) {
-        ctim = ctim ++ Map(cat.name -> cat.id)        
-      }
-      ctim
-    }
-
-    def idToCatMapFrom(cats : List[Category]) : Map[Int, String] = {
-      var itcm : Map[Int, String] = Map()
-      for (cat : Category <- cats) {
-        itcm = itcm ++ Map(cat.id -> cat.name)
-      }
-      itcm
-    }
-
     contentType = "application/json"
     response.setHeader("Access-Control-Allow-Origin", "*")
     implicit val formats = Serialization.formats(NoTypeHints)
-    val jsonData = read[JsonData](request.body)
+    val jsonData = sread[JsonData](request.body)
 
     val totalEcts : Int = jsonData.totalEcts
-    val categories : List[Category] = categoriesFrom(jsonData)
-    val catToIdMap : Map[String, Int] = catToIdMapFrom(categories)
-    val idToCatMap : Map[Int, String] = idToCatMapFrom(categories)
-    val modules : List[Module] = modulesFrom(jsonData, catToIdMap)
+    val categories : List[Category] = Helper.categoriesFrom(jsonData)
+    val catToIdMap : Map[String, Int] = Helper.catToIdMapFrom(categories)
+    val idToCatMap : Map[Int, String] = Helper.idToCatMapFrom(categories)
+    val modules : List[Module] = Helper.modulesFrom(jsonData, catToIdMap)
 
     val model : CPModel =
       ConstraintModel.fromBolognese(modules, categories, totalEcts)
     val oscarResult : OscaR[Collection[CPMFixedVar]] = OscaR.create(model)
 
-    def filteredModules(vs : Collection[CPMFixedVar],
-                        c : Category) : Iterable[Module] = {
-      
-      def bookedVarsInCategory() : Collection[CPMFixedVar] = {
-        // Closes over the vs and c vars from the container function
-        vs.filter(v => v.name.endsWith(":"+c.id) && v.value == 1)
-      }
-      
-      def moduleCorrespondingTo(v : CPMFixedVar) : Module = {
-        // Each module has unique module id, therefore 
-        // there can only be one module in the list
-        modules.filter((m : Module) => v.name.startsWith(m.id+":")).head
-      }
-      
-      return for (v <- bookedVarsInCategory())
-             yield moduleCorrespondingTo(v)
-    }
-    
     val x : OscaR[List[(Category, Iterable[Module])]] =
       for (vs <- oscarResult) yield {
-        for (c <- categories) yield (c, filteredModules(vs, c))
+        for (c <- categories) yield (c, Helper.filteredModules(vs, c, modules))
       }
     val y = x.map(x => x.toMap)
     val z = y.map( m => m.map(tuple => {
@@ -187,6 +205,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
 
     // This is the end result the user is interested in
     val modulesPerCategory : Map[String, Iterable[String]] = z.apply
+    val result : Result  = Helper.resultFrom(modulesPerCategory)
 
     // Let's log some stuff serverside for easy access 
     println()
@@ -202,8 +221,9 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     println("modulesPerCategory:" + modulesPerCategory)
     println("------------------------------------------------------------")
     println()
-    
-    request.body
+
+    // Send the results back to the user
+    swrite[Result](result)
   }
   
 }

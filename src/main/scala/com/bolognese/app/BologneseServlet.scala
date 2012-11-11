@@ -118,6 +118,27 @@ object Helper {
     mpc foreach ( (pair) => data += (pair._1 -> pair._2.toList) )
     Result(data)
   }
+
+  def logInterestingData(categories : List[Category],
+                         modules : List[Module],
+                         totalEcts : Int,
+                         result : Result) : Unit = {
+    println()
+    println("------------------------------------------------------------")
+    println("Total number of ECTS: ")
+    println(totalEcts)
+    println("------------------------------------------------------------")
+    println("Categories:")
+    categories.foreach (println)
+    println("------------------------------------------------------------")
+    println("Modules:")
+    Modules.foreach (println)
+    println("------------------------------------------------------------")
+    println("result to be sent back to the user: ")
+    println(result)
+    println("------------------------------------------------------------")
+    println()
+  }
 }
 
 // Object containing constants
@@ -208,19 +229,7 @@ class BologneseServlet extends ScalatraServlet with ScalateSupport {
     val result : Result  = Helper.resultFrom(modulesPerCategory)
 
     // Let's log some stuff serverside for easy access 
-    println()
-    println("------------------------------------------------------------")
-    println("total ects: " + totalEcts)
-    println("------------------------------------------------------------")
-    println("categories:")
-    categories.foreach (println)
-    println("------------------------------------------------------------")
-    println("modules:")
-    modules.foreach (println)
-    println("------------------------------------------------------------")
-    println("modulesPerCategory:" + modulesPerCategory)
-    println("------------------------------------------------------------")
-    println()
+    Helper.logInterestingData(categories, modules, totalEcts, result)
 
     // Send the results back to the user
     swrite[Result](result)

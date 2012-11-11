@@ -1,44 +1,44 @@
 <html>
-<head>
+  <head>
     <title>Bolognese</title>
     <script src="js/flapjax-2.1.js"></script>
     <script src="js/jquery-1.8.2.min.js"></script>
     <script src="js/site.js"></script>
     <link rel="stylesheet" type="text/css" href="css/site.css"/>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Bolognese</h1>
     <h2>Categories</h2>
     <table id="CategoriesTable">
-        <tr>
-            <th>Name</th>
-            <th>Minimum Points</th>
-            <th>Maximum Points</th>
-        </tr>
+      <tr class="CTColumnName">
+        <th>Name</th>
+        <th>Minimum Points</th>
+        <th>Maximum Points</th>
+      </tr>
     </table>
     <br/>
     <table id="CategoryInputTable">
-        <tr>
-            <td><input id="CategoryName"></input></td>
-            <td><input id="CategoryMinPoints"></input></td>
-            <td><input id="CategoryMaxPoints"></input></td>
-        </tr>
+      <tr>
+        <td><input id="CategoryName"></input></td>
+        <td><input id="CategoryMinPoints"></input></td>
+        <td><input id="CategoryMaxPoints"></input></td>
+      </tr>
     </table>
     <input type="submit" id="CategorySubmit"></input>
     <h2>Modules</h2>
     <table id="ModulesTable">
-        <tr>
-            <th>Name</th>
-            <th>Points</th>
-            <th>Bookable Categories</th>
-        </tr>
+      <tr>
+        <th>Name</th>
+        <th>Points</th>
+        <th>Bookable Categories</th>
+      </tr>
     </table>
     <table id="ModulesInputTable">
-        <tr>
-            <td><input id="ModulesName"></input></td>
-            <td><input id="ModulesPoints"></input></td>
-            <td><input id="ModulesBookableCategories"></input></td>
-        </tr>
+      <tr>
+        <td><input id="ModulesName"></input></td>
+        <td><input id="ModulesPoints"></input></td>
+        <td><input id="ModulesBookableCategories"></input></td>
+      </tr>
     </table>
     <input type="submit" id="ModulesSubmit"></input>
     <br/>
@@ -46,5 +46,5 @@
     <h2>Total Points: <span id="PointTotal"></span></h2>
     <br/>
     <input type="submit" value="Book Modules" id="Book"></input>
-</body>
+  </body>
 </html>

@@ -28,10 +28,9 @@
 
 %>>> You may change the text in this part {Between brackets}:
 %>>> This is for the Title page:
-\newcommand*\titel{Voorbeeld presentatie Beamer}
-\newcommand*\subkop{TU Huisstijl}
-\newcommand*\naam{Voornaam Achternaam}
-\newcommand*\afdeling{Afdeling}
+\newcommand*\titel{Project Bolognese}
+\newcommand*\subkop{Solving the Bologna process scheduling problem}
+\newcommand*\naam{Alon Dolev, Joey Ezechiels, Volker Lanting}
 %>>> This is for the frame-title on the "Table of Contents" page:
 \newcommand*\titelTOC{Outline}
 %>>> This is for the frame-title on the "Table of Contents" page
@@ -44,7 +43,7 @@
 \title{\titel} % This title also appears in the TUDelft bar on the next pages
 \author[]{\naam}
 \institute[]{\subkop \\ TU Delft}
-\date[]{\today}
+\date[]{16 november 2012}
 
 \AtBeginSubsection[]
 {
@@ -86,7 +85,7 @@
             \node [shift={(0.8cm,-3.5cm)},textlabel,cyan!95!black!70!blue,right]  at (current page.north west)
             {\textbf{\large{\textrm{\subkop}}}};
             \node [shift={(0.8cm,-4.6cm)},textlabel,right]  at (current page.north west)
-            {\normalsize{\naam, \afdeling}};
+            {\normalsize{\naam}};
             \node [shift={(0.8cm,-5cm)},textlabel,right]  at (current page.north west)
             {\normalsize{\today}};
         \end{tikzpicture}};

@@ -1,4 +1,4 @@
-\beamer@endinputifotherversion {3.20pt}
+\beamer@endinputifotherversion {3.10pt}
 \select@language {dutch}
 \beamer@sectionintoc {1}{First section}{3}{0}{1}
 \beamer@subsectionintoc {1}{1}{Section 1 - subsection 1}{3}{0}{1}

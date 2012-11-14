@@ -6,6 +6,7 @@
 
 # Generated files in documentation/
 documentation/report/auto*
+documentation/presentation/auto*
 
 # sbt specific
 dist/*

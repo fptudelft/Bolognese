@@ -1,0 +1,9 @@
+\beamer@endinputifotherversion {3.20pt}
+\select@language {dutch}
+\beamer@sectionintoc {1}{First section}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Section 1 - subsection 1}{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{Section 1 - subsection 2}{9}{0}{1}
+\beamer@subsectionintoc {1}{3}{Section 1 - subsection 3}{18}{0}{1}
+\beamer@sectionintoc {2}{Second section}{20}{0}{2}
+\beamer@subsectionintoc {2}{1}{Section 2 - subsection 1}{20}{0}{2}
+\beamer@subsectionintoc {2}{2}{Section 2 - last subsection}{23}{0}{2}

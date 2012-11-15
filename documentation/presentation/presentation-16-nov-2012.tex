@@ -7,8 +7,8 @@
 \documentclass{beamer}
 
 \setbeamersize{sidebar width left=0.5cm}
-\usepackage[dutch]{babel}
 \usepackage{tikz}
+\usepackage[dutch]{babel}
 \newcommand{\field}[1]{\mathbb{#1}}
 \newcommand{\Zset}{\field{Z}}
 \mode<presentation>
@@ -33,9 +33,7 @@
 \newcommand*\naam{Alon Dolev, Joey Ezechiels, Volker Lanting}
 %>>> This is for the frame-title on the "Table of Contents" page:
 \newcommand*\titelTOC{Outline}
-%>>> This is for the frame-title on the "Table of Contents" page
-%>>> when the next subsection will start:
-\newcommand*\subsectie{Next subsection}
+\newcommand*\presentationdate{November 16th 2012}
 
 
 %%% Not change this part below %%%
@@ -43,7 +41,6 @@
 \title{\titel} % This title also appears in the TUDelft bar on the next pages
 \author[]{\naam}
 \institute[]{\subkop \\ TU Delft}
-\date[]{16 november 2012}
 
 \tikzset{textlabel/.style={color=white}}
 %\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}} % Transparency Effect
@@ -102,7 +99,7 @@
             \node [shift={(0.8cm,-4.6cm)},textlabel,right]  at (current page.north west)
             {\normalsize{\naam}};
             \node [shift={(0.8cm,-5cm)},textlabel,right]  at (current page.north west)
-            {\normalsize{\today}};
+            {\normalsize{\presentationdate}};
         \end{tikzpicture}};
     \end{tikzpicture}
 \end{frame}
@@ -139,6 +136,15 @@
 
 \section{Our approach}
 	\frame{\frametitle{Outline}\tableofcontents[currentsection]}
+	
+	\subsection{User interface with Flapjax}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
+	\newpic{images/flapjacks.jpg}
+	\frame{\frametitle{User interface with Flapjax}
+
+	}
+	\nopic
+
 	\subsection{Constraint programming with OscaR}
 	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
 	\newpic{images/oscar.jpeg}
@@ -160,17 +166,24 @@
 		\end{itemize}
 	}
 	\nopic
-	
-	\subsection{User interfaces with Flapjax}
-	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
-	\newpic{images/flapjacks.jpg}
-	\frame{\frametitle{User interfaces with Flapjax}
 
+\section{What we learned}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
+	\newpic{images/binary.jpg}
+	\frame{\frametitle{What we learned}
+		\begin{tikzpicture}
+			\node at (0,1.5)
+			{\includegraphics[width=3cm]{images/oscarlogo.png}};
+			\node at (0,0)
+			{\includegraphics[width=3cm]{images/scalaLogo.png}};
+			\node at (0,-1.0)
+			{\includegraphics[width=3cm]{images/flapjaxlogo.png}};
+			\node at (0,-2.5)
+			{\includegraphics[width=3cm]{images/monad.jpg}};
+			\node at (-0.43,-3.0){Monads};
+		\end{tikzpicture}
 	}
 	\nopic
-
-\section{Summary}
-	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
 
 \section{Demo}
 	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}

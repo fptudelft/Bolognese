@@ -45,15 +45,26 @@
 \institute[]{\subkop \\ TU Delft}
 \date[]{16 november 2012}
 
-\AtBeginSubsection[]
-{
-\begin{frame}<beamer>\frametitle{\textbf{\LARGE{\textrm{\subsectie}}}}
-    \tableofcontents[currentsection,currentsubsection]  % Generation of the Table of Contents
-\end{frame}
-}
 \tikzset{textlabel/.style={color=white}}
 %\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}} % Transparency Effect
 \beamertemplatetransparentcovereddynamicmedium
+
+% use this to create a new picture at the right sidebar
+\newcommand{\newpic}[1]{
+\setbeamertemplate{sidebar right}
+{
+\llap{
+\includegraphics[height=8.35cm, width=5cm]{#1} 
+}
+}
+}
+
+\newcommand{\nopic}{
+	\setbeamertemplate{sidebar right}{}
+}
+
+\beamertemplatenavigationsymbolsempty
+
 
 %==============================================================
 \begin{document}
@@ -63,6 +74,9 @@
 \rlap{%\hskip0.1cm
 \includegraphics[scale=0.33]{TUDelft/beamer-tudelft-bies.jpg} }
 \vskip-5pt}
+
+
+
 
 %--------------------------------------------------------------
 
@@ -77,7 +91,8 @@
         \begin{tikzpicture}[remember picture, overlay]
             % These 2 lines you may comment out if you don't want to have a photo on the background of the title page
             \node [shift={(-0.14cm,5.56cm)},right] at (current page.south west)  % background photo
-            {\includegraphics[height=8.65cm]{TUDelft/background-titlepage.jpg}}; % background photo
+%            {\includegraphics[height=8.65cm]{TUDelft/background-titlepage.jpg}}; % background photo
+            {\includegraphics[height=8.65cm]{TUDelft/bolognese.jpg}}; % background photo
             \fill [cyan!95!black!70!blue] (0,2.9) -- (0,5.35) -- (-.5,5.35) -- (-.5,2.9) -- cycle ;%squareNorthWest
             \draw [fill=black] (0,0) -- (11,0) -- (11,2.9) -- (0,2.9) -- cycle ;
             \fill [fill=cyan!65!blue!80] (7,-3.9) -- (12.4,-3.9) -- (12.4,-3.65) -- (7,-3.65) -- cycle;
@@ -91,6 +106,7 @@
         \end{tikzpicture}};
     \end{tikzpicture}
 \end{frame}
+
 
 %--------------------------------------------
 %%% Table of contents (TOC)
@@ -107,243 +123,59 @@
 \end{frame}
 %--------------------------------------------
 
-%--------------------------------------------
-%>>> You may change the title-name of the 1st Section: {First section}
+\section{The Bologna process scheduling problem}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
+\newpic{images/BPLogo.jpg}
+\frame{\frametitle{The Bologna process scheduling problem}
+	Parts of the problem:
+	\begin{itemize}
+		\item Modules
+		\item Categories
+		\item total ECTS
+		\item (optimization goal)
+	\end{itemize}
+}
+\nopic
 
-\section{First section}
+\section{Our approach}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection]}
+	\subsection{Constraint programming with OscaR}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
+	\newpic{images/oscar.jpeg}
+	\frame{\frametitle{Constraint programming with OscaR}
+		\begin{itemize}
+			\item Integer Programming
+			\begin{itemize}
+				\item decision variables per possible booking
+				\item never double book a Module
+				\item book at least Category.min ECTS
+				\item obtain enough \emph{creditable} ECTS
+			\end{itemize}
 
-%>>> You may change all the Examples below:
-%--------------------------------------------
+			\item Encapsulating side-effects
+			\begin{itemize}
+				\item AST as constraint model
+				\item the OscaR monad
+			\end{itemize}
+		\end{itemize}
+	}
+	\nopic
+	
+	\subsection{User interfaces with Flapjax}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
+	\newpic{images/flapjacks.jpg}
+	\frame{\frametitle{User interfaces with Flapjax}
 
-\subsection{Section 1 - subsection 1}
+	}
+	\nopic
 
-% Section 1
-% Subsection 1
-% Page 1
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 1 - page 1}}}}
-    \begin{example}
-        \begin{minipage}{0.6\textwidth}
-            % insert picture (pdf file)
-            \includegraphics{images/ex1_periodic_number.pdf}
-        \end{minipage}
-        \centering{$u(n)=[3,1,4]_n$}
-    \end{example}
-\end{frame}
+\section{Summary}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
 
-%--------------------------------------------
+\section{Demo}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
 
-% Section 1
-% Subsection 1
-% Page 2
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 1 - page 2}}}}
-    \begin{definition}
-        Let $n$ be a discrete variable, i.e. $n\in\Zset$.
-        A 1-dimensional periodic number is a function that depends periodically on $n$.
-        $$
-        u(n)=
-        [u_0,u_1,\ldots,u_{d-1}]_n=
-        \begin{cases}
-            u_0 & \mbox{ if $n\equiv 0 \pmod d$} \\
-            u_1 & \mbox{ if $n\equiv 1 \pmod d$} \\
-            \vdots \\
-            u_{d-1} & \mbox{ if $n\equiv d-1 \pmod d$}
-        \end{cases}
-        $$
-        $d$ is called the period.
-    \end{definition}
-\end{frame}
-
-%--------------------------------------------
-
-% Section 1
-% Subsection 1
-% Page 3
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 1 - page 3}}}}
-    \begin{example}
-        \centering
-        {
-        $$
-        \begin{array}{rcl}
-            f(n)
-            &=&
-            -\left[\frac{1}{2},\frac{1}{3}\right]_n n^2
-            +3n-[1,2]_n
-            \\
-            &=&
-            \begin{cases}
-                -\frac{1}{3} n^2 +3n-2
-                & \text{ if $n\equiv 0 \pmod 2$} \\
-                -\frac{1}{2} n^2 +3n-1
-                & \text{ if $n\equiv 1 \pmod 2$}
-            \end{cases}
-            % &=&
-            % -\frac{n^2}{2}+3n-1
-            % -\left\{ \frac{n}{2} \right\}
-            % \left( \frac{2}{3}n^2+2
-            % \right)
-        \end{array}
-        $$
-        \begin{minipage}{0.4\textwidth}
-            % insert picture (pdf file)
-            \includegraphics[width=\textwidth]{images/ex2_quasi_polynomial.pdf}
-        \end{minipage}
-        }
-    \end{example}
-\end{frame}
-
-%--------------------------------------------
-
-% Section 1
-% Subsection 1
-% Page 4
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 1 - page 4}}}}
-    % Show first part of the screen highlighted
-    \begin{definition}
-        A polynomial in a variable $x$ is a linear combination of powers of $x$:
-        $$
-        f(x)=\sum_{i=0}^g c_i x^i
-        $$
-    \end{definition}
-    \pause
-
-    % Show second part of the screen highlighted
-    \begin{definition}
-        A quasi-polynomial in a variable $x$ is a polynomial expression
-        with periodic numbers as coefficients:
-        $$
-        f(n)=\sum_{i=0}^g u_i(n) n^i
-        $$
-        with $u_i(n)$ periodic numbers.
-    \end{definition}
-\end{frame}
-
-%--------------------------------------------
-%%% Highlighted in the TOC (Second subsection of First section)
-
-\subsection{Section 1 - subsection 2}
-
-% Section 1
-% Subsection 2
-% Page 1
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 2 - page 1}}}}
-    \begin{example}
-        \begin{columns}
-            \column{0.40\textwidth}
-            \centering
-            \includegraphics<1>[width=\textwidth]{images/ex3a_pp.pdf}
-            \includegraphics<2>[width=\textwidth]{images/ex3b_pp.pdf}
-            \includegraphics<3>[width=\textwidth]{images/ex3c_pp.pdf}
-            \includegraphics<4->[width=\textwidth]{images/ex3d_pp.pdf}
-            { \textbf{\small{{$x+y\le p$}}}}
-            \column{0.1\textwidth}
-
-            \begin{tabular}{c c}
-                $p$ & $f(p)$ \\ \hline
-                3 & 5 \\
-                \pause
-                4 & 8 \\
-                \pause
-                5 & 10 \\
-                \pause
-                6 & 13 \\
-            \end{tabular}
-
-            \column{0.3\textwidth}
-            \pause
-            $$
-            \frac{5}{2}p+\left[-2,\frac{-5}{2} \right]_p
-            $$
-        \end{columns}
-    \end{example}
-\end{frame}
-
-%--------------------------------------------
-
-
-% Section 1
-% Subsection 2
-% Page 2
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 2 - page 2}}}}
-    \begin{itemize}
-        \item <1-> The number of integer points in a \alert{parametric polytope} $P_{{p}}$ of dimension $n$
-        is expressed as a piecewise a quasi-polynomial of degree $n$ in ${p}$ (Clauss and Loechner).
-
-        \item <2->
-        More general \alert{polyhedral counting problems}:\\
-        Systems of linear inequalities combined with $\lor, \land, \neg, \forall,$ or $\exists$ (Presburger formulas).
-        \item <3->
-        Many problems in \alert{static program analysis} can be expressed as polyhedral counting problems.
-    \end{itemize}
-\end{frame}
-
-%--------------------------------------------
-%%% Highlighted in the TOC (Third subsection, First Section)
-
-\subsection{Section 1 - subsection 3}
-
-% Section 1
-% Subsection 3
-% Page 1
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 1 - subsection 3 - page 1}}}}
-    % Just an example
-    A picture made with the package TiKz \\
-    \begin{example}
-        \centering
-        %Number of live elements = quasi-polynomial\\
-        \includegraphics[width=5cm]{images/abadab-anti-theta-01.pdf}
-        %$\Downarrow$ \\
-        %Memory usage = maximum over all execution points
-    \end{example}
-\end{frame}
-
-%--------------------------------------------
-
-\section{Second section}
-
-\subsection{Section 2 - subsection 1}
-
-% Section 2
-% Subsection 1
-% Page 1
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Section 2 - subsection 1 - page 1}}}}
-    \begin{problem}
-        This page gives an example with numbered bullets (enumerate)\\
-        in an "Example" window:\\
-    \end{problem}
-
-    \begin{example}
-        Discrete domain $\Rightarrow$ evaluate in each point \\
-        Not possible for \\
-        \begin{enumerate}
-            \item <1-> parametric domains
-            \item <2-> large domains (NP-complete)
-        \end{enumerate}
-    \end{example}
-\end{frame}
-
-%--------------------------------------------
-
-\subsection[]{Section 2 - last subsection}
-
-% Section 2
-% Subsection 1
-% Page 2
-%%% Example:
-\begin{frame}\frametitle{\textbf{\LARGE{\textrm{Last page}}}}
-    \begin{block}{Summery}
-        \centering{End of the beamer demo\\
-        with a TUDelft lay-out.\\
-        Thank you!}
-    \end{block}
-\end{frame}
-%--------------------------------------------
+\section{Questions}
+	\frame{\frametitle{Outline}\tableofcontents[currentsection,currentsubsection]}
 
 \end{document} 

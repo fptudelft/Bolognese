@@ -88,45 +88,9 @@ var mapper = (function(){
         return parseInt(ectsString);
     };
 
-    var _sendRequest = function() {
-        var jsonData = {
-            'categories': _fetchCategoriesFrom($(".CategoriesTable")),
-            'modules':    _fetchModulesFrom($(".ModulesTable")),
-            'totalEcts':  _fetchTotalEctsFrom(".TotalEcts") };
-
-        console.log("jsonData: %o", jsonData);
-
-        $.ajax({
-            url: 'http://localhost:8080/solve',
-            type: 'POST',
-            contentType: 'text/plain; charset=UTF-8',
-            crossDomain: true,
-            dataType: 'json',
-            data: JSON.stringify(jsonData),
-            success: function(data, textStatus, jqXHR) {
-                if (console && console.log) {
-                    console.log('Take in the sweet smell of success:');
-                    console.log('\tdata: %o', data)
-                    console.log('\ttextStatus: %o', textStatus)
-                    console.log('\tjqXHR: %o', jqXHR)
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                if (console && console.log) {
-                    console.log('Look at the shame of failure:');
-                    console.log('\tjqXHR: %o', jqXHR)
-                    console.log('\ttextStatus: %o', textStatus)
-                    console.log('\terrorThrown: %o', errorThrown)
-                }
-            },
-        });
-    };
-
     return { fetchCategoriesFrom: _fetchCategoriesFrom,
              fetchModulesFrom: _fetchModulesFrom,
-             fetchTotalEctsFrom: _fetchTotalEctsFrom,
-             sendRequest: _sendRequest,
-    }
+             fetchTotalEctsFrom: _fetchTotalEctsFrom,   }
 })();
 
 

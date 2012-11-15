@@ -164,5 +164,5 @@ $(document).ready(function(){
 
     // Add sum of points!!
 
-    $('#Book').click( function(){ mapper.sendRequest() } );
+    $('#Book').click( function(){ requester.sendPostRequest() } );
 });

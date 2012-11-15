@@ -2,8 +2,8 @@
 \select@language {dutch}
 \beamer@sectionintoc {1}{The Bologna process scheduling problem}{3}{0}{1}
 \beamer@sectionintoc {2}{Our approach}{5}{0}{2}
-\beamer@subsectionintoc {2}{1}{Constraint programming with OscaR}{6}{0}{2}
-\beamer@subsectionintoc {2}{2}{User interfaces with Flapjax}{8}{0}{2}
-\beamer@sectionintoc {3}{Summary}{10}{0}{3}
-\beamer@sectionintoc {4}{Demo}{11}{0}{4}
-\beamer@sectionintoc {5}{Questions}{12}{0}{5}
+\beamer@subsectionintoc {2}{1}{User interface with Flapjax}{6}{0}{2}
+\beamer@subsectionintoc {2}{2}{Constraint programming with OscaR}{8}{0}{2}
+\beamer@sectionintoc {3}{What we learned}{10}{0}{3}
+\beamer@sectionintoc {4}{Demo}{12}{0}{4}
+\beamer@sectionintoc {5}{Questions}{13}{0}{5}

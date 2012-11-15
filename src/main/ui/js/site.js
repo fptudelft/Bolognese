@@ -68,7 +68,7 @@ $(document).ready(function(){
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR({className: "CTColumnValue"}, TH("Name"),
+        return TABLE(TR({className: "CTColumnName"}, TH("Name"),
                          TH("Minimum Points"),
                          TH("Maximum Points") ),
                      a);
@@ -135,7 +135,7 @@ $(document).ready(function(){
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR({className: "MTColumnValue"},
+        return TABLE(TR({className: "MTColumnName"},
                          TH("Name"),
                          TH("Points"),
                          TH("Bookable Categories") ),

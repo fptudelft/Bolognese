@@ -62,13 +62,13 @@ $(document).ready(function(){
             var a = rest.pop();
             var b = rest.pop();
             var c = rest.pop();
-            rest.push(TR(c, b, a));
+            rest.push(TR({className: "CTColumnValue"}, c, b, a));
         } else {
             rest.push(TD(item));
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR( TH("Name"),
+        return TABLE(TR({className: "CTColumnValue"}, TH("Name"),
                          TH("Minimum Points"),
                          TH("Maximum Points") ),
                      a);
@@ -129,13 +129,14 @@ $(document).ready(function(){
             var a = rest.pop();
             var b = rest.pop();
             var c = rest.pop();
-            rest.push(TR(c, b, a));
+            rest.push(TR({className: "MTColumnValue"}, c, b, a));
         } else {
             rest.push(TD(item));
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR( TH("Name"),
+        return TABLE(TR({className: "MTColumnValue"},
+                         TH("Name"),
                          TH("Points"),
                          TH("Bookable Categories") ),
                      a);

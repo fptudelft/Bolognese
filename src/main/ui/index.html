@@ -4,7 +4,7 @@
     <title>Bolognese</title>
     <script type="text/javascript" src="./js/underscore-1.4.2.js"></script>
     <script src="./js/flapjax-2.1.js"></script>
-    <script src="./js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="./js/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="./js/mapper.js"></script>
     <script src="./js/site.js"></script>
     <link rel="stylesheet" type="text/css" href="./css/site.css"/>
@@ -13,7 +13,7 @@
     <h1>Bolognese</h1>
     <h2>Categories</h2>
     <table id="CategoriesTable">
-      <tr>
+      <tr class="CTColumnName">
         <th>Name</th>
         <th>Minimum Points</th>
         <th>Maximum Points</th>
@@ -30,7 +30,7 @@
     <input type="submit" id="CategorySubmit"></input>
     <h2>Modules</h2>
     <table id="ModulesTable">
-      <tr>
+      <tr class="MTColumnName">
         <th>Name</th>
         <th>Points</th>
         <th>Bookable Categories</th>
@@ -46,7 +46,7 @@
     <input type="submit" id="ModulesSubmit"></input>
     <br/>
     <br/>
-    <h2>Total Points: <span id="PointTotal"></span></h2>
+    <h2 class="TotalEcts">Total Points: <span id="PointTotal"></span></h2>
     <br/>
     <input type="submit" value="Book Modules" id="Book"></input>
   </body>

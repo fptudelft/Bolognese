@@ -1,3 +1,10 @@
+/********************************************************************
+ **                                                                **
+ **  Static client side script that lets the user enter Categories **
+ **  and Modules, and submit them to the server.                   **
+ **                                                                **
+ ********************************************************************/
+
 $(document).ready(function(){
     /*
       CATEGORIES
@@ -68,9 +75,11 @@ $(document).ready(function(){
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR({className: "CTColumnName"}, TH("Name"),
-                         TH("Minimum Points"),
-                         TH("Maximum Points") ),
+        return TABLE({className: "CategoriesTable"},
+                     TR({className: "CTColumnName"},
+                        TH("Name"),
+                        TH("Minimum Points"),
+                        TH("Maximum Points") ),
                      a);
     });
 
@@ -114,7 +123,7 @@ $(document).ready(function(){
     var clickedModulesE = extractEventE('ModulesSubmit', 'click');
 
     // Serialize events
-    var modulesNameE  = clickedModulesE.snapshotE(moduleName).delayE(1);
+    var modulesNameE = clickedModulesE.snapshotE(moduleName).delayE(1);
     var modulesPointsE = clickedModulesE.snapshotE(modulePoints).delayE(2);
     var modulesBookableCategoriesE =
         clickedModulesE.snapshotE(moduleBookableCategories).delayE(3);
@@ -135,10 +144,11 @@ $(document).ready(function(){
         }
         return rest;
     }).mapE(function(a) {
-        return TABLE(TR({className: "MTColumnName"},
-                         TH("Name"),
-                         TH("Points"),
-                         TH("Bookable Categories") ),
+        return TABLE({className: "ModulesTable"},
+                     TR({className: "MTColumnName"},
+                        TH("Name"),
+                        TH("Points"),
+                        TH("Bookable Categories") ),
                      a);
     });
 
@@ -153,4 +163,6 @@ $(document).ready(function(){
     insertDomE(totalE, 'PointTotal');
 
     // Add sum of points!!
+
+    $('#Book').click( function(){ mapper.sendRequest() } );
 });

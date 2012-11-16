@@ -1,16 +1,16 @@
 #Categories
 #Compulsory
-#Free Electives
+#Specialization
 
 +Bookable Modules
-+Distributed Algorithms [6] Compulsory, Free Electives
-+Advanced Algorithms [5] Compulsory, Free Electives
-+Compiler Construction [5] Compulsory, Free Electives
-+Software Architecture [5] Compulsory, Free Electives
-+Web & Semantic Web Engineering [5] Compulsory, Free Electives
++Distributed Algorithms [6] Compulsory, Specialization
++Advanced Algorithms [5] Compulsory, Specialization
++Compiler Construction [5] Compulsory, Specialization
++Software Architecture [5] Compulsory, Specialization
++Web & Semantic Web Engineering [5] Compulsory, Specialization
 +Methodology Of Science And Engineering [4] Compulsory
-+Functional Programming [5] Free Electives
++Functional Programming [5] Specialization
 
 -Booked Modules
--Functional Programming : Free Electives
+-Functional Programming : Specialization
 -Methodology Of Science And Engineering : Compulsory

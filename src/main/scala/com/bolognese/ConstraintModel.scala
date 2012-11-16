@@ -49,6 +49,7 @@ object ConstraintModel {
     // collect all the constraints
     val cons : Collection[AbstractCPMConstraint] =
       minEctsConstraints ++ moduleBookingConstraints ++ List(totalEctsConstraint)
+    println(totalEctsConstraint)
     // create a model with the variables, constraints and the minimization goal
     return CPModel(vars,cons,CPMMinimize(CPMIntSum(bookedEcts.values)))
   }

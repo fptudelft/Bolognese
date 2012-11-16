@@ -114,8 +114,9 @@ object OscaR {
                        vars:Map[String,CPVarInt]) : CPVarInt = e match {
     case CPMIntMul(l,r) => oscarize(l,cp,vars) * oscarize(r,cp,vars)
     case CPMIntMinimum(l,r) => {
-      val x = oscarize(l,cp,vars)
-      CPVarInt(cp, x.min, Math.min(x.max,r))
+        val x = oscarize(l,cp,vars)
+        x.updateMax(Math.min(x.max,r))
+        x
     }
     case CPMIntSum(es) => sum(es.map(oscarize(_,cp,vars)))
     case CPMIntRef(n) => vars(n)

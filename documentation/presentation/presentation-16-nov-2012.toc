@@ -1,6 +1,6 @@
-\beamer@endinputifotherversion {3.10pt}
+\beamer@endinputifotherversion {3.20pt}
 \select@language {dutch}
-\beamer@sectionintoc {1}{The Bologna process scheduling problem}{3}{0}{1}
+\beamer@sectionintoc {1}{The Bolognese process scheduling problem}{3}{0}{1}
 \beamer@sectionintoc {2}{Our approach}{5}{0}{2}
 \beamer@subsectionintoc {2}{1}{User interface with Flapjax}{6}{0}{2}
 \beamer@subsectionintoc {2}{2}{Constraint programming with OscaR}{8}{0}{2}

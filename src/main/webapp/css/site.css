@@ -2,22 +2,35 @@ body {
   font-family: Helvetica, sans-serif;
 }
 
-table {
+#CategoriesTable, #ModulesTable {
   width: 100%;
 }
 
-th {
-  width: 300px;
-  text-align: left;
+.ContainedTable {
+  width: 100;
 }
 
-td {
-  width: 300px
-  text-align: left;
+table {
+  cellspacing: 0;
+  padding: 1;
+}
+
+#ContainerTable {
+  width: 100%;
+  text-align: center;
+}
+
+.TableInputField, .TableHeader {
+  width: 33.3%;
+}
+
+th, td {
+  width: 33.3%;
+  border-style: solid;
 }
 
 #EctsTargetInputTable {
-  width: 30%;
+  width: 50%;
 }
 
 .Button {

@@ -14,46 +14,64 @@
     <h1>Bolognese</h1>
     <input type="submit" value="Book Modules" id="Book"></input>
     <br>
+    
     <table id="EctsTargetInputTable">
       <tr>
         <td>Targeted number of ECTS: </td>
         <td><input id="EctsTarget"></input></td>
       </tr>
     </table>
-    <h2>Categories</h2>
-    <table id="CategoriesTable">
-      <tr class="CTColumnName">
-        <th>Name</th>
-        <th>Minimum Points</th>
-        <th>Maximum Points</th>
-      </tr>
-    </table>
-    <br/>
-    <table id="CategoryInputTable">
+
+    <table id="ContainerTable">
       <tr>
-        <td><input id="CategoryName"></input></td>
-        <td><input id="CategoryMinPoints"></input></td>
-        <td><input id="CategoryMaxPoints"></input></td>
+        <td width="50%">
+          
+          <h2>Categories</h2>
+          <table class="ContainedTable" id="CategoryInputTable">
+            <tr>
+              <td class="TableInputField"><input id="CategoryName"></input></td>
+              <td class="TableInputField"><input id="CategoryMinPoints"></input></td>
+              <td class="TableInputField"><input id="CategoryMaxPoints"></input></td>
+            </tr>
+          </table>
+
+          <input type="submit" id="CategorySubmit"></input>
+          
+          <table class="ContainedTable" id="CategoriesTable">
+            <tr class="CTColumnName">
+              <th class="TableHeader">Name</th>
+              <th class="TableHeader">Minimum Points</th>
+              <th class="TableHeader">Maximum Points</th>
+            </tr>
+          </table>
+          
+        </td>
+
+        <td width="50%">
+
+          <h2>Modules</h2>
+          <table class="ContainedTable" id="ModulesInputTable">
+            <tr>
+              <td class="TableInputField"><input id="ModulesName"></input></td>
+              <td class="TableInputField"><input id="ModulesPoints"></input></td>
+              <td class="TableInputField"><input id="ModulesBookableCategories"></input></td>
+            </tr>
+          </table>
+
+          <input type="submit" id="ModulesSubmit"></input>
+          
+          <table class="ContainedTable" id="ModulesTable">
+            <tr class="MTColumnName">
+              <th class="TableHeader" >Name</th>
+              <th class="TableHeader" >Points</th>
+              <th class="TableHeader" >Bookable Categories</th>
+            </tr>
+          </table>
+
+        </td>
       </tr>
     </table>
-    <input type="submit" id="CategorySubmit"></input>
-    <h2>Modules</h2>
-    <table id="ModulesTable">
-      <tr class="MTColumnName">
-        <th>Name</th>
-        <th>Points</th>
-        <th>Bookable Categories</th>
-      </tr>
-    </table>
-    <table id="ModulesInputTable">
-      <tr>
-        <td><input id="ModulesName"></input></td>
-        <td><input id="ModulesPoints"></input></td>
-        <td><input id="ModulesBookableCategories"></input></td>
-      </tr>
-    </table>
-    <input type="submit" id="ModulesSubmit"></input>
-    <br/>
+
     <br/>
     <h2 class="TotalEcts">Total Points: <span id="PointTotal"></span></h2>
     <br/>

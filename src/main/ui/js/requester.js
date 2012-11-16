@@ -12,8 +12,6 @@ var requester = (function() {
             'modules':    mapper.fetchModulesFrom($(".ModulesTable")),
             'totalEcts':  mapper.fetchTotalEctsFrom(".TotalEcts") };
 
-        console.log("jsonData: %o", jsonData);
-
         $.ajax({
             url: 'http://localhost:8080/solve',
             type: 'POST',

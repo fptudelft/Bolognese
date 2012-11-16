@@ -7,6 +7,13 @@
 # Generated files in documentation/
 documentation/report/auto*
 documentation/presentation/auto*
+documentation/presentation/presentation-16-nov-2012.aux
+documentation/presentation/presentation-16-nov-2012.nav
+documentation/presentation/presentation-16-nov-2012.out
+documentation/presentation/presentation-16-nov-2012.pdf
+documentation/presentation/presentation-16-nov-2012.toc
+documentation/presentation/presentation-16-nov-2012.bbl
+documentation/presentation/presentation-16-nov-2012.blg
 
 # sbt specific
 dist/*

@@ -92,22 +92,3 @@ var mapper = (function(){
              fetchModulesFrom: _fetchModulesFrom,
              fetchTotalEctsFrom: _fetchTotalEctsFrom,   }
 })();
-
-
-
-// $(document).ready(function() {
-//     var jsonData = { 'categories': mapper.fetchCategoriesFrom($("#CategoriesTable")),
-//                      'modules':    mapper.fetchModulesFrom($("#ModulesTable")),
-//                      'totalEcts':  17 }; // TODO remove this hardcoded
-//                                          // magic number
-//
-//     $('#send-req').click( function(){ mapper.sendRequest(jsonData) } );
-//
-//     $('#logTables').click(function() {
-//         console.log("categories: %o", jsonData['categories']);
-//         console.log("modules: %o", jsonData['modules']);
-//         console.log("jsonData: %o", jsonData);
-//     });
-//
-//     $("table").css("background-color", "blue");
-// });

@@ -20,19 +20,19 @@ var requester = (function() {
             dataType: 'json',
             data: JSON.stringify(jsonData),
             success: function(data, textStatus, jqXHR) {
-                if (console && console.log) {
-                    console.log('Take in the sweet smell of success:');
-                    console.log('\tdata: %o', data)
-                    console.log('\ttextStatus: %o', textStatus)
-                    console.log('\tjqXHR: %o', jqXHR)
+                if (window.console && window.console.log) {
+                    window.console.log('Take in the sweet smell of success:');
+                    window.console.log('\tdata: %o', data)
+                    window.console.log('\ttextStatus: %o', textStatus)
+                    window.console.log('\tjqXHR: %o', jqXHR)
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                if (console && console.log) {
-                    console.log('Look at the shame of failure:');
-                    console.log('\tjqXHR: %o', jqXHR)
-                    console.log('\ttextStatus: %o', textStatus)
-                    console.log('\terrorThrown: %o', errorThrown)
+                if (window.console && window.console.log) {
+                    window.console.log('Look at the shame of failure:');
+                    window.console.log('\tjqXHR: %o', jqXHR)
+                    window.console.log('\ttextStatus: %o', textStatus)
+                    window.console.log('\terrorThrown: %o', errorThrown)
                 }
             },
         });

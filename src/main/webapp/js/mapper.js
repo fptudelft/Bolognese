@@ -84,7 +84,7 @@ var mapper = (function(){
     };
 
     var _fetchTotalEctsFrom = function(ectsNodeId) {
-        var ectsString = $("" + ectsNodeId + " > span").text();
+        var ectsString = $(""+ectsNodeId).val();
         return parseInt(ectsString);
     };
 

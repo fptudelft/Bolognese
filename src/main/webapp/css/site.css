@@ -1,23 +1,27 @@
 body {
-    font-family: Helvetica, sans-serif;
+  font-family: Helvetica, sans-serif;
 }
 
 table {
-    width: 100%;
+  width: 100%;
 }
 
 th {
-    width: 300px;
-    text-align: left;
+  width: 300px;
+  text-align: left;
 }
 
 td {
-    width: 300px
-    text-align: left;
+  width: 300px
+  text-align: left;
+}
+
+#EctsTargetInputTable {
+  width: 30%;
 }
 
 .Button {
-    width: 768;
-    background-color: yellow;
+  width: 768;
+  background-color: yellow;
 }
 

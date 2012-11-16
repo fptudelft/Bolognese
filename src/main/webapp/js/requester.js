@@ -10,7 +10,7 @@ var requester = (function() {
         var jsonData = {
             'categories': mapper.fetchCategoriesFrom($(".CategoriesTable")),
             'modules':    mapper.fetchModulesFrom($(".ModulesTable")),
-            'totalEcts':  mapper.fetchTotalEctsFrom(".TotalEcts") };
+            'totalEcts':  mapper.fetchTotalEctsFrom("#EctsTarget") };
 
         $.ajax({
             url: 'http://localhost:8080/solve',
